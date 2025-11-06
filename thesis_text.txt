@@ -1,0 +1,3035 @@
+1084599
+
+Oxford Internet Institute, University of Oxford
+
+Candidate Number
+Assignment
+Term
+Title/Question
+
+Word Count
+
+Assignment Cover Sheet
+
+1084599
+Thesis
+TT
+Green Machine Dreams? A Quantitative
+Analysis of Sustainable AI Innovation
+13,859
+
+I hereby certify as follows:
+
+(a) This thesis or coursework is entirely my own work, except where acknowledg-
+ments of other sources are given. I also confirm that this coursework has not
+been submitted, wholly or substantially, to another examination at this or any
+other University or educational institution;
+
+(b) I have read and understood the Education Committee’s information and guid-
+ance on academic good practice and plagiarism at https://www.ox.ac.uk/
+students/academic/guidance/skills?wssl=1.
+
+(c) I agree that my work may be checked for plagiarism using Turnitin software
+and have read the Notice to Candidates which can be seen at: http://www.
+admin.ox.ac.uk/proctors/turnitin2w.shtml, and that I agree to my work being
+screened and used as explained in that Notice;
+
+(d) I have clearly indicated (with appropriate references) the presence of all ma-
+terial I have paraphrased, quoted or used from other sources, including any
+diagrams, charts, tables or graphs.
+
+(e) I have acknowledged appropriately any assistance I have received in addition
+
+to that provided by my [tutor/supervisor/adviser].
+
+(f) I have not sought assistance from a professional agency;
+
+(g) I understand that any false claims for this work will be reported to the Proctors
+
+and may be penalized in accordance with the University regulations.
+
+Please remember:
+
+• To attach a second relevant cover sheet if you have a disability such as dyslexia
+or dyspraxia. These are available from the Higher Degrees Office, but the
+Disability Advisory Service will be able to guide you.
+
+1
+
+University of Oxford
+
+Green Machine Dreams?
+A Quantitative Analysis of Sustainable AI Innovation
+
+Candidate number: 1084599
+01. August 2024
+
+Thesis submitted in partial fulfilment of the requirement for the degree
+of MSc in Social Data Science at the Oxford Internet Institute at the
+University of Oxford
+
+Trinity Term 2024
+
+13,859 words
+
+Abstract
+
+It is indisputable that combating the climate crisis must be a top priority. A promising
+approach endorsed by many experts is to use artificial intelligence (AI) to mitigate and
+adapt to the effects of climate change. However, these systems themselves cause significant
+environmental degradation. Therefore, establishing AI that best contributes to climate
+action, requires us to both harness the potential of AI to tackle climate impacts and make
+AI itself more sustainable. Given the urgency of the situation, researchers and developers
+need to focus their efforts optimally across these objectives. This requires large-scale evi-
+dence on the trajectory of sustainable AI innovation, which illuminates areas of progress
+and neglect. To this aim, the present thesis investigates whether patents, analysed with
+natural language processing (NLP) techniques, provide a relevant perspective to enrich
+our understanding of innovation in sustainable AI. Using a text-based classifier, I reveal
+that the sustainability of AI is severely under-researched, especially environmental im-
+Inventions which utilise AI to further the
+pacts that go beyond energy consumption.
+sustainability of other products and processes are much more prevalent and focus mostly
+on the energy and mobility sectors. Notably, major AI players contribute alarmingly little
+to sustainability innovation, despite dominating the overall AI market. These findings not
+only highlight the pivotal role of patents in enhancing our understanding of the field, they
+also underscore the urgent need for policies that incentivise critical research in sustainable
+AI. Importantly, this thesis hopes to facilitate future research into the field by providing
+a hand-labelled dataset and a text-based classifier to distinguish between patents using
+AI for Sustainability and those improving the Sustainability of AI. Because one thing is
+certain: Without effective, evidence-based policy, the current trajectory of sustainable AI
+innovation gives little indication that the colourful dreams of sustainable AI will come
+true.
+
+Keywords— Sustainability - Artificial Intelligence - Innovation - Patents - Natural
+Language Processing
+
+Environmental Disclaimer
+
+As we gain a better understanding of the tremendous environmental costs of AI
+systems, it is imperative for scholars and practitioners alike to contribute to making
+AI more sustainable. A crucial first step is to make transparent the computational
+resources required for training models. This will allow for a better evaluation of
+whether these costs are justified and how they might be minimised. In the present
+thesis, the following computational and environmental resources were used.
+
+1. Classification models
+
+Hardware specifications: All classification models were computed on the OII
+server, using the NVIDIA A100 80GB PCIe GPU.
+
+Training duration: Including experimentation, 343 models were trained with an
+average runtime of 22.9 minutes, resulting in a total training time of 7844.4 minutes
+or 130.7 hours.1
+
+Energy consumption: In total, the training required 60.74 kWh of energy (es-
+timated with Green Algorithms2 as recommended by Bouza, Bugeau, and Lanne-
+longue (2023)).
+
+Carbon footprint: This translates to a carbon footprint of 14.04 kg CO2 equiva-
+lents (Green Algorithms).
+
+2. Topic models
+
+Hardware specifications: The topic models were also computed on the OII server,
+using both the NVIDIA A100 80GB PCIe GPU and the Intel Xeon Gold 6338 CPU.
+
+Training duration: Including experimentation, 7 models were trained with an
+average runtime of 6.2 minutes.
+
+Energy consumption: In total, this required 432.30 Wh of energy (Green Algo-
+rithms).
+
+Carbon footprint: This translates to a carbon footprint of 99.91 g CO2 equivalents
+(Green Algorithms).
+
+1Note that the server is used by several people at a time which impacts the training duration.
+
+By taking the average runtime, I attempt to provide a reasonable estimate.
+
+2https://calculator.green-algorithms.org/
+
+Table of Contents
+
+1 Introduction
+
+1
+
+2 Literature Review and Theoretical Framework
+
+2.1 Sustainable AI . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.1 AI for Sustainability . . . . . . . . . . . . . . . . . . . . . . .
+2.1.2
+Sustainability of AI . . . . . . . . . . . . . . . . . . . . . . . .
+2.1.3 Previous work . . . . . . . . . . . . . . . . . . . . . . . . . . .
+Innovation in sustainable AI . . . . . . . . . . . . . . . . . . . . . . .
+2.2
+2.3 Patents as a framework of innovation . . . . . . . . . . . . . . . . . .
+2.4 Research questions
+
+4
+4
+4
+5
+6
+6
+8
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+
+3 Methodology
+
+3.3 Model pipeline
+
+14
+3.1 European patents . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+3.2 Data . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+3.2.1 Patent identification . . . . . . . . . . . . . . . . . . . . . . . 14
+. . . . . . . . . . . . . . . . . . . . . . . . . . 16
+3.2.2 Patent retrieval
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+3.3.1 Data cleaning . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+3.3.2 Hand labelling . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+3.3.3 Label validation . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+3.3.4 Classifier architectures . . . . . . . . . . . . . . . . . . . . . . 23
+. . . . . . . . . . . . . . . . . . 23
+3.3.4.1 Model architectures
+3.3.4.2
+Loss functions . . . . . . . . . . . . . . . . . . . . . . 25
+3.3.4.3 Multimodal input data . . . . . . . . . . . . . . . . . 25
+3.3.5 Model evaluation . . . . . . . . . . . . . . . . . . . . . . . . . 26
+. . . . . . . . . . 26
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+3.4.1 AI for Sustainability . . . . . . . . . . . . . . . . . . . . . . . 27
+Sustainability of AI . . . . . . . . . . . . . . . . . . . . . . . . 28
+3.4.2
+. . . . . . . . . . . . . . . . . . . . . . 28
+3.4.3 Environmental impact
+3.5 Actor identification . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+
+3.3.5.1 Overview of classifier architectures
+
+3.4 Content analysis
+
+4 Results
+
+29
+4.1 Classification results
+. . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+4.2 SQ 1: Balance in innovation activity . . . . . . . . . . . . . . . . . . 31
+4.3 SQ 2: AI for Sustainability innovation . . . . . . . . . . . . . . . . . 31
+4.4 SQ 3: Sustainability of AI innovation . . . . . . . . . . . . . . . . . . 33
+4.5 SQ 4: Environmental focus of Sustainability of AI inventions . . . . . 36
+4.6 SQ 5: Major actors in sustainable AI patenting . . . . . . . . . . . . 37
+4.7 Patents as a framework of sustainable AI innovation . . . . . . . . . . 37
+
+5 Discussion
+
+39
+5.1 Principal findings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+5.2 Patent classifier . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+
+2
+
+1084599
+
+5.3 Contextualisation in the wider literature . . . . . . . . . . . . . . . . 40
+SQ 1: Balance in innovation activity . . . . . . . . . . . . . . 40
+5.3.1
+SQ 2: AI for Sustainability innovation . . . . . . . . . . . . . 40
+5.3.2
+SQ 3: Sustainability of AI innovation . . . . . . . . . . . . . . 41
+5.3.3
+SQ 4: Environmental focus of Sustainability of AI inventions . 41
+5.3.4
+5.3.5
+SQ 5: Major actors in sustainable AI patenting . . . . . . . . 42
+5.3.6 Patents as a framework of sustainable AI innovation . . . . . . 42
+5.4 Limitations
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+5.5 Avenues of future research . . . . . . . . . . . . . . . . . . . . . . . . 44
+
+6 Conclusion
+
+A Keyword searches for Sustainability of AI labelled patents
+
+B Zero-shot topic descriptions
+
+C Environmental impact keyword list
+
+45
+
+57
+
+58
+
+59
+
+3
+
+1 |
+
+Introduction
+
+In March, Google researchers published a paper showcasing FloodHub, the com-
+pany’s own Artificial Intelligence (AI) powered flood forecasting system. Using long
+short-term memory networks, FloodHub outperforms state-of-the-art modelling sys-
+tems and its accurate and timely warnings promise to save thousands of lives world-
+wide (Nearing et al., 2024). The initiative is a testament to Google’s belief in the
+"transformative role" (Google, 2023) that AI can play in addressing global chal-
+lenges, above all the climate crisis. However, Floodhub also exemplifies a broader
+narrative that is promoted by many major AI companies: the vision of technology
+as a comprehensive and effective solution to planetary health. This narrative has
+long since spread. Pointing to projects ranging from waste management to ocean
+cleanup, experts across industries and politics celebrate AI as the key to sustain-
+ability (UNFCCC, 2024; World Economic Forum, 2024).
+
+However, the story does not end there. Google’s 2024 environmental report reveals
+some sobering facts about the sustainability contribution of AI. Over the past five
+years, the company’s emissions have soared by 48% - driven mainly by AI infrastruc-
+ture (Google, 2024). Similar statistics are being reported across the AI landscape.
+Training the prominent GPT3 model, for instance, is estimated to have resulted in
+552t CO2 emissions, which is equivalent to 1000 flights from London to New York
+(Patterson et al., 2021). The water consumption necessary for cooling AI computing
+infrastructure is similarly concerning. P. Li et al. (2023) estimate that by 2027, the
+AI sector could account for up to 6.6 billion cubic meters of yearly freshwater con-
+sumption - almost two-thirds of the annual consumption of England (Department
+for Environment, Food and Rural Affairs, 2024). With compute demands of newly
+released systems doubling every 3-4 months (Amodei and Hernandez, 2018), these
+figures give rise to a critical question: Can AI truly serve as a solution to the climate
+crisis, or does it actually risk exacerbating the problem?
+
+This tension between environmental costs and benefits of AI illustrates a crucial
+insight: To work towards "sustainable AI", i.e., AI that is compatible with environ-
+mental sustainability, we must engage with two levers simultaneously. The first lever
+lies in harnessing AI for Sustainability. As realised in projects like Floodhub, this
+approach leverages the automation and prediction potential of AI systems to unlock
+progress in climate change mitigation and adaptation. The second lever consists in
+improving the Sustainability of AI, for instance by optimising the energy and fresh-
+water consumption. Only if both aspects receive sufficient attention, that is, only
+if we effectively use AI to advance climate change mitigation and adaptation while
+minimising its damaging impact, AI can optimally contribute to our fight against
+the climate crisis (van Wynsberghe, 2021).
+
+Importantly, this is not bound to happen automatically. Currently, companies and
+researchers show much more interest in showcasing how AI could save the planet
+than in reducing the environmental impacts of their models (van Wynsberghe, 2021).
+To instead guide research and innovation toward a comprehensive understanding of
+both pillars of sustainable AI, we need transparency about the progress that has
+been made as well as the gaps that remain. On the one hand, this will enable
+
+1
+
+1084599
+
+researchers and developers to identify and focus on the most pressing problems.
+Oftentimes, however, simply pointing out neglected areas and urging innovators to
+work on them is not enough. Large AI companies, in particular, may have monetary
+incentives that conflict with the developments necessary to establish sustainable AI.
+Thus, transparency is also essential for designing effective policy, steering the AI
+sector toward sustainable practices and innovation.
+
+While emerging literature discusses the trajectory of sustainable AI research, the
+analyses rest on example projects and theoretical use cases, falling short of provid-
+ing actual evidence-based transparency. Moreover, despite the most influential AI
+players being technology companies, most articles confine their analysis solely to
+academic research, thereby overlooking important innovation occurring in the in-
+dustry (Akter, 2024; Rolnick et al., 2019; Stein, 2020; Vinuesa et al., 2020). This
+thesis sets out to fill this important gap and provide the first large-scale quantitative
+analysis of sustainable AI inventions. As a novel methodological approach, I pro-
+pose to use patents as a rich data source, resting the analysis on Natural Language
+Processing (NLP) techniques. For this, I focus on European patents, analysing on
+the following research question:
+
+Are patents, analysed using Natural Language Processing (NLP) techniques, a rele-
+vant element of inquiry to improve our understanding of innovation within the field
+of sustainable AI?
+
+The answer to this question will be guided by a collection of subquestions which
+illuminate different dimensions of sustainable AI innovation. This approach allows
+me to obtain a nuanced assessment of the scientific value of a patent analysis in the
+context at hand. The subquestions are as follows:
+
+1. How is innovation activity balanced between the fields of Sustainability of AI
+
+and AI for Sustainability?
+
+2. How are inventions using AI for Sustainability clustered across different sectors
+
+and technologies?
+
+3. How are inventions that improve the Sustainability of AI clustered along the
+
+AI pipeline?
+
+4. Which environmental impacts of AI systems do inventions focusing on the
+
+Sustainability of AI attempt to mitigate?
+
+5. Who are the major actors patenting solutions in sustainable AI?
+
+This thesis makes two critical contributions. Firstly, I provide the first large-scale
+empirical evaluation of trends and gaps within sustainable AI innovation. The in-
+sights generated by this are an essential foundation of policy necessary to align the
+AI sector with environmental sustainability. Secondly, I aim to facilitate future
+scientific inquiry into this crucial area by testing NLP-based patent analysis as a
+novel perspective on innovation in sustainable AI. As part of this project, I present
+a classifier trained on a new hand-labelled dataset which allows for a differentiation
+between patents using AI for Sustainability and those improving the Sustainability
+of AI. This can be used by other scholars to continue and expand this important
+
+2
+
+1084599
+
+line of research. In consequence, the critical contributions made by this paper will
+hopefully serve as valuable guidance in establishing truly sustainable AI.
+
+In section 2, I will review the theo-
+The rest of this paper proceeds as follows.
+retical background and motivate my research questions. Section 3 will detail the
+data selection and retrieval and present the empirical strategy. In section 4, I will
+present analytical results. After discussing my findings, as well as the strengths and
+limitations of this paper in section 5, I will offer a conclusion in section 6.
+
+3
+
+2 | Literature Review and Theoretical Framework
+
+In the following, I review the theoretical background informing this study. First, I
+discuss how sustainable AI can be conceptualised. Then, I argue that patents are
+a useful lens through which to analyse innovation in this field: Due to companies’
+interest in protecting their sustainable AI inventions, patents document a relevant
+subset of innovation and expand our understanding of progress in sustainable AI
+beyond academia. Finally, I elaborate on how the subquestions presented above
+illuminate significant aspects of sustainable AI innovation, allowing me to answer
+my overarching research question.
+
+2.1 Sustainable AI
+
+This paper is based on a definition of sustainable AI brought forward by van Wyns-
+berghe (2021). In the scope of this thesis, I focus specifically on the environmental
+dimension of sustainability, which can be defined as "meeting the resource and ser-
+vices needs of current and future generations without compromising the health of
+the ecosystem" (Morelli, 2013, p. 5). Following van Wynsberghe (2021), I under-
+stand sustainable AI as having two pillars: AI for Sustainability and Sustainability
+of AI (see Figure 2.1).
+
+Figure 2.1: Two pillars of sustainable AI
+
+2.1.1 AI for Sustainability
+
+On the one hand, sustainable AI includes technologies which apply AI to broadly fur-
+ther sustainability. Coined AI for Sustainability, this branch encompasses projects
+such as the FloodHub initiative discussed in the introduction.
+In recent years,
+a range of AI for Sustainability inventions has been proposed. The AI for SDGs
+
+4
+
+1084599
+
+ThinkTank even published a designated database covering over 13,500 projects which
+use AI systems to tackle Sustainable Development Goals (SDGs), with over 1000
+projects specifically focusing on Climate Action (AI4SDG Think Tank, 2024). No-
+tably, while many of these initiatives make important contributions to tackling the
+climate crisis, it is important to acknowledge that influential companies have a
+vested interest in the narrative of AI as the solution to global challenges. Framing
+the climate crisis as a technological problem which can be solved with their own
+products, allows AI players to underscore and strengthen their significance and in-
+fluence (Morozov, 2013; Nachtwey and Seidl, 2024). As such, it must be carefully
+evaluated what benefits AI for Sustainability projects bring and where they may
+fall short of actually solving problems. Nonetheless, an analysis by Vinuesa et al.
+(2020) suggests that AI for Sustainability innovation can make a significant contri-
+bution. Using a consensus-based expert elicitation process, they estimate that AI
+may enable the accomplishment of 93% of environmental SDG targets, with partic-
+ular benefits relating to modelling climate impacts (Word Economic Forum, 2018),
+improving environmental planning, e.g., by detecting desertification (Mohamadi,
+Heidarizadi, and Nourollahi, 2016), and optimising energy distribution and usage
+(Word Economic Forum, 2018).
+
+2.1.2 Sustainability of AI
+
+Technologies in the second pillar of sustainable AI focus on making AI itself more
+sustainable. With AI systems often being portrayed as immaterial and almost in-
+herently sustainable (Kuntsman and Rattle, 2019; Saetra, 2023), this aspect tends
+to remain overlooked. However, as more and more evidence emerges which quan-
+tifies the immense environmental consequences of AI systems, the Sustainability of
+AI is starting to gain scientific attention (Verdecchia, Sallou, and Cruz, 2023). By
+now, scholars have proposed different soft- and hardware-based approaches to make
+AI systems less environmentally damaging. Focusing on algorithm optimisation, for
+instance, structure simplification approaches for deep neural networks have been
+shown to enable up to 115% energy savings (Zhang, Davoodi, and Hu, 2018). Im-
+portantly, research in this field is set to become all the more relevant as AI is being
+integrated into societal and business infrastructure: currently estimated at $196.6
+billion, the global AI market is projected to reach a size of over $1.7 trillion by 2030
+(Grand View Research, 2024a). The consequences of this development are serious:
+The global electricity consumption of data centres rose from 204 TWh in 2018 to
+460 TWh in 2022 (International Energy Agency, 2024; Masanet et al., 2020). By
+2026, even under conservative assumptions, this is expected to increase to as much
+as 800 TWh, i.e. almost quadrupling the electricity consumption within 8 years (In-
+ternational Energy Agency, 2024). In light of this growth in market size and energy
+consumption, improving the Sustainability of AI becomes a key lever in preventing
+severe environmental damages.
+
+5
+
+1084599
+
+2.1.3 Previous work
+
+Research which analyses the development of sustainable AI is still in the beginning
+stages. So far, most studies focus on just one of the pillars, studying either the
+environmental damages resulting from AI models or mapping out their (potential)
+sustainability applications (Akter, 2024; Gunderson, Petersen, and Stuart, 2018;
+Rolnick et al., 2019; Stein, 2020; Vinuesa et al., 2020). Importantly, this often paints
+a one-sided picture by overestimating the positive impact of AI while ignoring the
+costs or only considering the environmental harms without acknowledging potential
+benefits. Only a handful of studies have provided a more comprehensive overview,
+carefully discussing the relationship between risks and benefits (Cowls et al., 2021;
+Khakurel et al., 2018; Tomasev et al., 2020).
+
+Problematically, the literature so far relies on theoretical analyses and exemplary
+projects. However, especially when providing the policy guidance required for steer-
+ing innovation in the right direction, it is imperative to obtain large-scale empirical
+evidence (Kaack et al., 2020). Moreover, studies in sustainable AI exhibit a strong
+focus on academic research, with industry developments remaining overlooked. How-
+ever, as I will argue, companies present a relevant arena of innovation. Not only
+are they positioned at the forefront of AI development, but they also generate im-
+portant insights about the practical implementation and scalability of AI solutions
+in real-world scenarios (Fan, Yan, and Wen, 2023). Confining insights to academic
+literature is therefore insufficient for capturing all relevant innovation in the field.
+To fill this gap, I propose to use patents as a large-scale data source on innovation
+in sustainable AI.
+
+Notably, Verendel (2023) uses a similar approach when analysing AI in climate in-
+ventions using US patent data. However, while this constitutes an interesting first
+step, the paper only considers higher-level bibliometric patterns, without investi-
+gating innovation activity itself. Furthermore, the study does not offer a theory-led
+analysis: it investigates sustainable AI as one large area without distinguishing be-
+tween the two pillars. As such, it cannot indicate whether different aspects are
+sufficiently addressed and to what extent further research needs to be incentivised.
+By improving on their work, this thesis will, to the best of my knowledge, provide
+the first large-scale analysis of innovation activity within sustainable AI.
+
+2.2 Innovation in sustainable AI
+
+To strengthen the case for patents as a data-source and framework, I will now detail
+why companies engage in significant sustainable AI innovation and why they use
+patents to protect these inventions.
+
+Research suggests that companies have strong economic reasons to be involved in
+sustainability innovation in general. Most importantly, inventing more sustainable
+products and processes, such as more eco-friendly business models or production
+methods (Adams et al., 2016; G. Li et al., 2019), come with two perks. For one,
+eco-friendly operations can directly reduce costs by minimizing resource usage and
+
+6
+
+1084599
+
+waste (Hermundsdottir and Aspelund, 2021; Ram Nidumolu, 2009). However, as
+the climate crisis is increasingly recognised as one of the most pressing challenges to
+overcome, sustainability also emerges as a powerful instrument to boost a company’s
+reputation. Marketing one’s firm and products as environmentally friendly can
+gain the support and trust of stakeholders and thus improve market status and
+popularity (Gomez-Trujillo, Velez-Ocampo, and Gonzalez-Perez, 2020; G. Li et al.,
+2019). While many companies thus relevantly engage in sustainable innovation, it
+is important to note, that strong incentives to be perceived as eco-friendly do not
+necessarily lead to genuine sustainability efforts. Instead, some inventions may be
+"greenwashing" attempts, although this is often difficult to discern in quantitative
+data (Z. Yang et al., 2020).
+
+Companies engage in sustainable AI innovation, in particular, for at least two dis-
+tinct reasons. For one, it allows AI companies to expand their societal influence. As
+discussed, framing the climate crisis as a technological problem to which AI systems
+present the solution, allows AI suppliers to position themselves as relevant for soci-
+ety and thus gain support and power (Morozov, 2013; Nachtwey and Seidl, 2024).
+Most effectively, this narrative can be maintained by presenting inventions such as
+FloodHub, which impressively showcase the potential AI holds to address the cli-
+mate crisis. AI for Sustainability innovation can therefore be leveraged to associate
+AI as a sector with sustainable goals. Engaging in selected innovation concerning
+the Sustainability of AI can then create a synergy: it strengthens the notion that
+a firm is seriously committed to reducing their environmental impact while feeding
+into the idea of AI as a sustainable (and therefore valuable) technology.
+
+A range of tech companies follow this strategy. Google, for instance, have devel-
+oped a range of climate-smart technologies, including the Environmental Insights
+Explorer, a data-based tool aiming to help policymakers reduce emissions (Mendes,
+2023, pp. 191-194). These showcase the potential of using AI for Sustainability.
+Additionally, Google innovates the Sustainability of AI and prominently features
+such inventions in their external communication. For instance, in their 2022 report
+on "Accelerating Climate Action at Google and Beyond", the company presented
+a machine-learning-optimised Tensor Processing Unit (TPU) which claims to gen-
+erate 93% fewer emissions compared to similar unoptimised servers (Google and
+Boston Consulting Group, 2023). Similar patterns can be observed across other
+large AI players including Microsoft, Meta, Amazon (Mendes, 2023, pp. 2017-224),
+and NVIDIA (NVIDIA, 2022).
+
+Companies without a core AI business have a different incentive to produce sus-
+tainable AI inventions. For them, using AI can facilitate the transformation toward
+more eco-friendly operations which, as discussed, comes with monetary and reputa-
+tional perks. Monetary benefits can often be captured by integrating AI into firm
+internal processes such as production, for instance by using smart manufacturing
+and maintenance to improve energy efficiency (Bokrantz et al., 2020; Mittal et al.,
+2020). Using AI in actual products, on the other hand, often comes with repu-
+tational benefits. If products are more sustainable than those of competitors, for
+instance by using AI based monitoring to improve efficiency and resource utilisation
+Liu et al. (2022), this allows for a differentiation of the firm which in turn can boost
+
+7
+
+1084599
+
+reputation and lead to superior market status (G. Li et al., 2019). Often, AI is
+integrated both in firm-internal processes as well as products. For instance, when
+looking at the energy sector, AI is used for data-driven and efficient demand fore-
+casting and energy management, i.e., provider-level processes, as well as in actual
+products such as smart meters (Aslam et al., 2021; Menghi et al., 2019; Wang et al.,
+2019).
+
+Both dynamics present strong incentives for firms to engage in sustainable AI in-
+novation, speaking for the idea that significant sustainable AI innovation is indeed
+generated within the industry context. Note, however, that this does not mean
+that companies necessarily have a genuine commitment to climate justice. Many of
+these firms contribute massively to global emissions and their "green innovations"
+are largely motivated by monetary incentives (Mendes, 2023, pp. 188-224).
+
+2.3 Patents as a framework of innovation
+
+To study firms’ sustainable AI innovation activity, I argue that patents are a highly
+useful data source. Patents are exclusive rights over an invention and constitute
+one of the most common forms of intellectual property protection (IPP) (Azzam,
+2009). They allow innovators to prevent others from commercially using, producing,
+or distributing their invention, usually for a limited time period (Pila, 2019, pp. 99-
+101). To patent a technology, inventors must submit an application to a national
+or international patent office, such as the European Patent Office (EPO), detailing
+their invention and a set of claims, i.e., boundaries within which the technology is
+protected (Pila, 2019, pp. 102-103).
+
+It is important to note that there are some limitations to what can be patented,
+especially for immaterial goods such as AI. In the jurisdiction of the EPO, AI is
+patentable as long as it has a proven "technical character". In theory, this means
+that inventions must have physical features or use some form of technical means.
+However, this entails a very wide definition: a technical character can be proven by
+simply applying an algorithm to some technological context, even if it is as general
+as classifying image or audio data, or by solving a technical problem related to AI
+(EPO, 2024a). Specifically when looking at AI in the context of sustainability, most
+technologies in both pillars clearly fall under this criterion: In the field of AI for
+Sustainability, AI is by definition applied to a specific context, for which it aims
+to further sustainability. Within Sustainability of AI, solutions tend to incorporate
+some form of technical implementation of an AI model which allows an algorithm
+to become less environmentally damaging.
+
+Notably, AI is not only theoretically patentable, research also suggests that technol-
+ogy companies show immense interest in using patents to protect their inventions, for
+at least three reasons. Firstly, large technology players strategically use intellectual
+property rights to strengthen and preserve their innovation leadership. According
+to Rikap (2023), tech companies create "Data-driven Intellectual Monopolies". This
+phenomenon describes monopolistic market structures that are based on ownership
+over knowledge: exclusive access to innovative AI systems combined with owner-
+
+8
+
+1084599
+
+ship of data and computing infrastructure allows firms to benefit from the network
+complementarities of controlling the entire AI value chain. A crucial aspect of main-
+taining this control is to engage in continuous innovation to ensure intellectual lead-
+ership and prevent potential competitors from catching up. In this system, patents
+are a way of appropriating and gatekeeping research, including research which is
+done in cooperation with academic institutions, and thus gaining exclusive access to
+the most advanced AI systems. Microsoft exemplifies this business strategy. Over
+the past 10 years, the company has engaged in continuous innovation across their
+mobile and cloud business to preserve and expand their status as a data-driven in-
+tellectual monopoly (Ibarra and Rattan, 2018). As a result, Microsoft has built
+the second-largest AI patent portfolio in the world, only exceeded by IBM (WIPO,
+2019).
+
+With these growing power structures around knowledge, patenting becomes also a
+protective strategy. Powerful companies’ aggressive patenting strategies create a
+constant threat of patent disputes, potentially involving highly expensive litigation.
+This forces especially smaller firms to also build up patent portfolios in order to
+improve their negotiating position or to be able to credibly threaten a counterclaim
+if necessary (Noel and Schankerman, 2013). It even makes it worthwhile for com-
+panies to patent technologies if otherwise, it would not be. Patenting is expensive,
+complex and time-consuming. Especially for fast-moving technological fields such
+as AI, where independent discovery or reverse engineering by competitors is un-
+likely, innovators may prefer more flexible forms of IPP. For instance, firms may
+use trade secrecy (La Diega, 2018; Meyers, 2018) or forego protection altogether
+and share software with the open-source community. But given this specific back-
+ground, many AI developers follow a dual strategy where their code is open-sourced
+and shared with the academic community while also being protected with a patent.
+Open-sourcing their products allows companies to build a reputation and attract tal-
+ent from top research institutions, while patent portfolios protect the firm (Calvin
+and Leung, 2020; Hutson, 2023).
+
+A third dimension contributing to the high relevance of patents in the context of
+sustainable AI is the fact that, increasingly, AI is embedded in hardware products
+and machinery. Particularly AI for Sustainability inventions such as the battery
+and energy examples discussed above are often applied to technological fields which
+are less fast-moving and where reverse engineering is indeed a problem (Bessen and
+Hunt, 2007; Comino, Manenti, and Thumm, 2019). Naturally, these sectors are
+much more interested in using patents as a protection mechanism. This is all the
+more true since in recent years, the tangible entry barriers to many technology
+markets have fallen. AI systems, in particular, can now be applied easily even
+by firms with relatively little expertise, such that IPP becomes more important to
+protect inventions (Gereffi, 2014).
+
+Overall, this makes a strong case for the relevance of studying sustainable AI through
+the lens of patents. Nonetheless, it must be acknowledged that patents do not cover
+all relevant inventions. To the best of my knowledge, the share of non-patented AI
+technologies is unknown. But as the arguments above show, patenting dynamics are
+determined by strong and complex incentives, such that findings are likely not fully
+
+9
+
+1084599
+
+generalisable to non-patented technologies.
+
+2.4 Research questions
+
+Following this argumentation, I empirically evaluate patents as a data source of
+sustainable AI innovation. Patents contain a wide range of information about a
+technology. For instance, extensive textual data describes the functionality and
+application of an invention and bibliometric information details citations and con-
+nections between patents (see Figure 2.2).
+
+Figure 2.2: Example of a patent layout detailing the different elements of patent
+publications (visualisation by Jiang and Goetz (2024))
+
+I propose to specifically focus on textual elements in the patent data. So far, many
+patent-based studies concentrate on the bibliometric data, analysing, for instance, a
+patent’s novelty (Dahlin and Behrens, 2005) or forecasting technology developments
+(Daim et al., 2006). Another strand of studies uses patent classification codes which
+are assigned by patent offices and contain information about the type and tech-
+nological domain of a patent. Papers in this branch include technological trend
+analyses and patent valuation assessments (Jeon, Chae, and Gim, 2020; G.-C. Yang
+et al., 2015). Both approaches, I argue, are somewhat limited in extracting use-
+ful information about sustainable AI innovation. Bibliometric information can only
+illuminate relationships between patents without focusing on content. While clas-
+sification codes do contain information about a patent’s content, they are limited
+in providing a comprehensive and unbiased overview. Since classification systems
+are developed by human experts, they impose human judgements about which cat-
+egories are relevant and how they relate to each other. This pre-determines which
+types of innovations can be identified - if a category does not have a designated
+code, it cannot be found. This is particularly problematic in fast-moving fields
+like AI, where the classification systems may lack many new and significant cate-
+gories and thus obscure important innovation patterns. Analysing textual data with
+NLP techniques, instead, allows for a data-driven analysis, giving potentially more
+
+10
+
+1084599
+
+comprehensive insights and reducing this bias. Since NLP techniques cover a wide
+range of applications, including patent classification and content retrieval (Jiang and
+Goetz, 2024), they provide a promising approach to the analysis of sustainable AI
+patents. This informs my overarching research question (RQ):
+
+RQ: Are patents, analysed using NLP techniques, a relevant element of
+inquiry to improve our understanding of innovation within the field of
+sustainable AI?
+
+To answer this research question, I analyse five subquestions (SQ). Each one, I ar-
+gue, illuminates a relevant element of sustainable AI innovation. Combined, they
+will make evident whether and how a patent perspective enriches our understand-
+ing of the field. The first subquestion concerns the balance between innovation in
+AI for Sustainability and Sustainability of AI, the two pillars of sustainable AI.
+While van Wynsberghe (2021) clarifies that both branches are valuable and nec-
+essary components of achieving truly sustainable AI, this view is not mirrored in
+the general discourse on AI. As discussed, AI is oftentimes strategically portrayed
+as the (sole) solution to global challenges such as the climate crisis (Nachtwey and
+Seidl, 2024). At the same time, the environmental degradation caused by AI tends
+to be overlooked or underestimated (Saetra, 2023). This narrative could powerfully
+impact innovation efforts and lead to large blindspots in the innovation landscape,
+motivating the first subquestion:
+
+SQ 1: How is innovation activity balanced between the fields of Sustain-
+ability of AI and AI for Sustainability ?
+
+A second essential aspect of enhancing our understanding of sustainable AI inno-
+vation is to look at the two pillars individually, starting with AI for Sustainability.
+As discussed earlier, inventions in this field apply AI systems to improve production
+processes, products, and infrastructure. As Fan, Yan, and Wen (2023) find, these
+applications come with different opportunities and challenges based on the industry
+sector they are applied to. Analysing the innovation in AI for Sustainability by
+sector and technology group can thus give valuable insights to guide and regulate
+the use of AI for sustainability purposes in a constructive and effective way. This
+informs the second subquestion:
+
+SQ 2: How are inventions using AI for Sustainability clustered across
+different sectors and technologies?
+
+When analysing research progress in Sustainability of AI, it is common practice to
+conceptualise innovation along the AI development process, i.e., organising inno-
+vation by the experimentation, training and inference phases of AI models (Chien
+et al., 2023; Patterson et al., 2021). When applying a patent lens, this conceptu-
+alisation has limited applicability. After all, the same hardware implementations,
+e.g., GPUs, can be used for all of these phases. Instead, I follow Wu et al. (2022) in
+their framework of the areas of optimisation along the AI pipeline (see Figure 2.3).
+According to this framework, the AI pipeline consists of data collection on the one
+hand and AI operations on the other hand. Within the latter, optimisation can be
+achieved by innovating
+
+11
+
+1084599
+
+• platforms, i.e., frameworks or suite of tools providing the necessary software
+
+infrastructure and interfaces for using AI models,
+
+• models, i.e., specific model architectures,
+
+• specialised AI hardware, for instance, hardware accelerators such as GPUs, or
+
+• infrastructure,
+
+i.e., components related to network connectivity, data and
+
+model storage, and general hardware such as cooling or power supply.
+
+Figure 2.3: Overview of areas of optimisation along the AI pipeline
+
+Based on this conceptualisation, I study the following third subquestion:
+
+SQ 3: How are inventions that improve the Sustainability of AI clustered
+along the AI pipeline?
+
+The fourth subquestion relates to the specific sustainability dimensions targeted by
+innovations. For this, I only consider Sustainability of AI inventions, as these are
+bound to target the specific environmental impacts of AI systems.1 Major impacts
+suggested by the literature include energy consumption, water consumption, waste
+and resource depletion, particularly rare metals which are crucial for many hardware
+components (Ligozat et al., 2022). Since arguably, all impacts should be reduced to
+
+1AI for Sustainability inventions, on the other hand, could contribute to sustainability in many
+more ways, for instance by improving the performance of some inherently "sustainable" technology
+(e.g., smart grids) or by predicting environmental and climate dynamics. The environmental impact
+analysis here is highly complex, beyond the scope of this thesis.
+
+12
+
+1084599
+
+make AI truly sustainable, environmental impact analysis can highlight important
+fields of progress or neglect. This motivates the fourth subquestion:
+
+SQ 4: Which environmental impacts of AI systems do inventions focusing
+on the Sustainability of AI attempt to mitigate
+
+Finally, looking at sustainable AI through the lens of patents allows me to analyse
+major actors in the patent landscape. These are relevant in two ways. Firstly, with
+innovation being a key lever of progress in sustainable AI, patents capture to what
+extent large AI players and other companies show commitment to aligning AI with
+sustainability. Secondly, patents reveal who owns inventions and thus who benefits
+from this progress. With innovation being strategically used to expand market power
+(see Sections 2.2 and 2.3), it is imperative to make transparent who has exclusive
+access to knowledge.
+
+SQ 5: Who are the major actors patenting solutions in sustainable AI?
+
+Taken together, these five subquestions allow me to reveal whether and how patents
+can serve as a relevant element of inquiry to improve our understanding of innovation
+within the field of sustainable AI.
+
+13
+
+3 | Methodology
+
+In the following, I present my data and methodology. After motivating European
+patents as the focus of my thesis, I detail how sustainable AI patents were identified
+and retrieved. I then outline my methodology, presenting a classifier to distinguish
+between innovation in the two pillars of sustainable AI which is based on a new,
+hand-labelled dataset, as well as two topic models used for content analysis.
+
+3.1 European patents
+
+I focus on patents published with the European Patent Office (EPO) for two main
+reasons. Firstly, the majority of research in (Sustainable) AI focuses on the USA,
+the largest AI market worldwide (Grand View Research, 2023). However, to gain
+a thorough understanding of sector developments, it is crucial to study a variety of
+regions. With AI spending projected to reach $66.4 billion in 2024, Europe captures
+almost a quarter of the global AI market (Grand View Research, 2024b), making
+it a highly relevant regional focus. Secondly, this thesis aims to generate policy-
+informing insights necessary to establish sustainable AI. European institutions have
+already demonstrated a strong interest in building regulatory frameworks for the
+AI sector (Veale and Borgesius, 2021). Thus, my findings "fall on fertile ground",
+making it more likely that they can contribute to shaping effective policies which may
+serve as an example to other regions, including the US, where regulatory attention
+remains highly fragmented.
+
+How generalisable are findings obtained in Europe? First, it must be noted that firms
+from all around the world can apply for European patents if they are interested
+in exclusive ownership over their invention in the European jurisdiction. Thus,
+my data cover inventions from a wide range of companies worldwide. Naturally,
+however, the decision to apply for patents in a jurisdiction is guided by specific
+incentives, such as the market size for a product. Also, not all companies have
+the required resources to apply for international patents. Entire geographies such
+as lower and middle income countries may be underrepresented such that European
+data are likely not generalisable to the full international community. A second aspect
+potentially limiting the external validity is that patent laws are country specific.
+Subtle differences between the legislations may impact patterns in the patenting
+activity, particularly for new and emerging fields such as AI (Pila, 2019). While
+this project should therefore be considered a case study, European Patents remain
+a highly interesting context.
+
+3.2 Data
+
+3.2.1 Patent identification
+
+To identify innovation in sustainable AI, I selected patents that lie at the intersec-
+tion between AI and environmental sustainability. This approach was proposed by
+
+14
+
+1084599
+
+Verendel (2023) in their study on citation patterns of climate AI inventions and
+successfully captures patents with relevant AI elements.
+
+Patents which relate to AI or sustainability can be identified with "search strategies"
+developed by major patent organisations. These strategies rely on the extensive clas-
+sification systems used by patent offices to organise patents. One prominent system
+is the Cooperative Patent Classification (CPC). Using designated codes, this sys-
+tem categorises technologies into a detailed structure of over 200,000 groups. For
+example, a patent for a new method of processing neural networks (publication num-
+ber: EP3839831A1) is classified under "computing arrangements based on biological
+models" (see Figure 3.1). A similar system is the International Patent Classification
+(IPC). Both IPC and CPC codes were used in this study.
+
+Figure 3.1: CPC classification scheme example
+
+Specific codes determine whether a patent belongs to a particular technology group,
+allowing for the selection of relevant patents. For both AI and sustainability, several
+search strategies exist which have been shown yield different sets of relevant patents
+(Favot et al., 2023). I thus combine multiple search strategies for a comprehensive
+overview. Figure 3.2) presents the search strategies used for identifying AI and
+sustainability patents.
+
+Figure 3.2: Overview of search strategies for obtaining AI and sustainability patents
+
+For detecting AI, I combined three strategies. Firstly, I used the approach provided
+by the World Intellectual Property Organisation (WIPO), which is most prominent
+in the literature. The organisation defines AI systems as "learning systems; that
+is, machines that can become better at a task typically performed by humans with
+
+15
+
+1084599
+
+limited or no human intervention"(WIPO, 2019, p. 19). To operationalise this in the
+context of patents, the WIPO refers to the Association for Computing Machinery
+(ACM) Computing Classification Scheme, which conceptualises AI as
+
+• AI techniques, i.e., "advanced forms of statistical and mathematical models",
+
+• AI functional applications, i.e., specific functions realized using AI techniques,
+
+and
+
+• AI application fields, i.e., larger areas where AI techniques and functional
+
+applications can find application (WIPO, 2019, p. 25).
+
+Patents that fall under this definition were detected using CPC and IPC codes, as
+well as keywords. As the second and third strategy, I use the approaches provided
+by Patentscope as well as the UK Intellectual Property Office (UK IPO). Both con-
+stitute updated versions of the original WIPO strategy and use the same definition
+of AI.123
+
+For sustainability related technologies, I also combined three strategies. The first
+group of sustainability patents was identified using the Y02 and Y04S classes in
+the CPC scheme. These classes were included post-hoc to flag technologies that
+"control, reduce or prevent greenhouse gas (GHG) emission of anthropogenic origin"
+(Veefkind et al., 2012). The second group of patents was identified using the IPC
+Green Inventory proposed by the WIPO in collaboration with the United Nations
+Framework Convention on Climate Change (UNFCCC) and the Intergovernmental
+Panel on Climate Change (IPCC) (WIPO, 2010). Finally, the ENV-TECH search
+strategy proposed by the OECD (Hascic and Migotto, 2015) was applied. All three
+strategies were developed independently using expert commissions. Notably, no
+definitions of sustainability or clear conceptual frameworks were published based on
+which this was done (Favot et al., 2023; Veefkind et al., 2012).
+
+Note, that defining patents as "sustainable" is subject to a critical limitation. Since
+patents cannot account for the specific contexts within which patented technologies
+will be produced and distributed, they offer limited information about the environ-
+mental damages potentially connected to a technology. Thus, any "sustainability"
+label of patents can only be an approximation, falling short of a comprehensive
+assessment.
+
+3.2.2 Patent retrieval
+
+Based on the above identification strategies, I used PATSTAT (Figure 3.3), an online
+patent database curated by the EPO (EPO, 2024b), to identify publication numbers
+of relevant patents. Then, textual and bibliographic data were obtained from the
+
+1WIPO:
+
+https://www.wipo.int/export/sites/www/tech_trends/en/docs/techtrends_ai_
+
+methodology.pdf, accessed 20.06.2024.
+
+2Patentscope: https://www.wipo.int/tech_trends/en/artificial_intelligence/patentscope.html,
+
+accessed 20.06.2024.
+
+3UK
+
+IPO:
+
+https://assets.publishing.service.gov.uk/media/5d2dc787ed915d2fe1abfabe/
+
+Artificial_Intelligence_-_A_worldwide_overview_of_AI_patents.pdf, accessed 20.06.2024.
+
+16
+
+EPO Open Patent Service via their API client. Assignee names and filing dates
+were taken from Google Patents.4
+
+1084599
+
+Figure 3.3: Screenshot of Patstat database used for patent retrieval
+
+With this approach, I identified 451,859 AI patents and 773,786 sustainability patents.
+In the overlap and after deduplication (see Section 3.3.1 below), this resulted in a
+dataset of 20,445 sustainable AI patents. Figure 3.4 displays these patents over
+publication years. Notably, annual publication numbers rose substantially over the
+study period, increasing more than 8-fold between 2000 and 2023.
+
+3.3 Model pipeline
+
+The patent analysis conducted in this thesis consists of two main parts. In the first
+step, I build a patent classifier, finetuned to differentiating between patents relating
+to AI for Sustainability and Sustainability of AI. In the second step, I use topic
+modelling to analyse which technologies are patented in the two branches.
+
+3.3.1 Data cleaning
+
+Prior to implementing any models, several cleaning steps were undertaken as visu-
+alised in Figure 3.5. First, patents, for which no English version of the abstract,
+description or claims was available, were machine translated using Google Trans-
+lator. Then, patents were thoroughly deduplicated, a step which is particularly
+
+4EPO Open Patent Service API client:
+bulk
+
+patents:
+
+data were
+
+Google
+bigquery?project=axial-gist-422710-c6&ws=!1m12!1m4!4m3!1spatents-public-data!
+2spatents!3spublications_202310!1m6!12m5!1m3!1saxial-gist-422710-c6!2seurope-west2!
+3scdd4d719-90e4-46af-b42e-48e6a1a1b60f!2e2 and missing patents were queried directly on
+the website https://patents.google.com/, all accessed 20.06.2024.
+
+obtained
+
+https://pypi.org/project/python-epo-ops-client/,
+from https://console.cloud.google.com/
+
+17
+
+1084599
+
+Figure 3.4: Yearly sustainable AI patent publications between 2000 and 2023
+
+important for NLP tasks where it has been shown to improve model performance
+(Lee et al., 2022). For patents which share the publication number, country and
+title, I kept only that patent in the dataset, which exhibits the most textual data
+components (i.e., abstract, description and claims). This is assumed to maximise
+the information contained about a patented technology.
+
+As discussed above, patents were retrieved from several different data sources. Each
+platform provides patents with titles, so each patent can have multiple titles that
+may conflict with each other. To consolidate this, patents with conflicting informa-
+tion were filtered and cross-checked manually. For 1,386 patents, titles from Google
+and EPO showed some discrepancy. In these cases, the longer title was chosen, as-
+suming that this would capture more information about the patent. Finally, all texts
+were set to lower case and patent specific elements such as references to drawings
+were removed. Since I used transformer models later in the analysis, no stopwords
+were removed.
+
+3.3.2 Hand labelling
+
+To train a classifier that can differentiate between the two pillars of sustainable AI,
+I required ground truth data. Notably, this study is the first to empirically anal-
+yse sustainable AI conceptualised as consisting of two branches. Ergo, no labelled
+datasets existed (yet) that could be used for this purpose. Instead, I manually la-
+belled patents as concerning Sustainability of AI and/or AI for Sustainability.
+I
+used the following inclusion and exclusion criteria.
+
+For technologies to be labelled as concerning the Sustainability of AI, they must re-
+late to the AI pipeline as proposed by Wu et al. (2022). As discussed, this includes
+technologies relating to data collection and AI operations, i.e., platforms, models,
+specialised AI hardware and infrastructure. Patents concerning energy production
+and grids were excluded. While more sustainable energy systems do contribute to re-
+ducing the environmental impact of AI, such patents were considered not sufficiently
+specific to AI. For technologies to be labelled as concerning AI for Sustainability,
+
+18
+
+1084599
+
+Figure 3.5: Flowchart of data retrieval and cleaning
+
+19
+
+1084599
+
+they must use AI to make another process more sustainable and/or provide infor-
+mation necessary to achieve this.
+
+Importantly, some technologies were labelled as concerning both classes. For in-
+stance, automated power factor correction, a method for compensating for lagging
+current, is an AI-related product that is used to improve the sustainability of data
+centres (i.e., AI pipeline) and other products (Zhu et al., 2023). Similarly, some
+patents were falsely included in the group of sustainable AI patents. For instance,
+some patents related to brain surgery, potentially included via neural network re-
+lated keywords. Such patents were labelled as belonging to neither class.
+
+For the hand labelling, I adopted a three-stage process. First, a random sample of
+500 patents was drawn. However, this resulted in an extreme under-representation
+of patents in the Sustainability of AI class, with less than 20 sample patents. Since
+a classifier can likely not extrapolate from such few samples to the wider group, I
+secondly used keyword-searches to obtain more minority-class patents. For this, I
+designed queries using keywords along the AI pipeline, aiming to capture Sustain-
+ability of AI patents which are as broad and diverse as possible (see Appendix A
+for keyword list). In this stage, an additional 200 patents were labelled. Despite the
+careful design of keyword searches, this likely resulted in a biased training set, where
+only specific types of Sustainability of AI inventions are included. Problematically,
+the classifier may not be able to extrapolate to all types of patents in that class,
+such that the performance on the training set may be misleadingly high compared
+to the performance on all unlabelled data.
+
+To circumvent this issue, I adopted an Active Learning (AL) approach as the third
+stage. Designed for contexts where labelled data is scarce and costly to obtain, AL is
+a method to strategically select those instances which would be most informative to
+label. Thus, it aims to maximise the information value of the training set, enabling
+the classifier to reach better performance on unseen data compared to random or
+biased sampling (Tharwat and Schenck, 2023). AL has been tested specifically for
+BERT-based models with highly promising results (Ein-Dor et al., 2020), making it
+an excellent method for this study.
+
+To implement AL, one first trains the classification model, on the small sample of
+initially labelled instances. Here, I trained a baseline BERT model (see Section
+3.3.4). Then, this model is used to predict classes for all unlabelled patents in the
+dataset. To identify the most informative instances, I used the least confidence
+strategy proposed by Lewis (1995). For each prediction, this method takes the
+probability distribution over all possible classes and computes the entropy which
+is a measure of uncertainty. It selects those predictions with the highest entropy
+(i.e., the predictions where the model is least certain about the label) for manual
+validation. In this third stage, 300 patents were labelled, resulting in a final training
+dataset of 1000 patents. The label distribution in this training set is presented in
+Table 3.1.
+
+20
+
+1084599
+
+Patent Label
+
+Training set Test set All labelled data
+
+AI for Sustainability
+Sustainability of AI
+Both
+None
+
+Total
+
+594
+97
+102
+7
+
+800
+
+150
+21
+29
+0
+
+200
+
+Table 3.1: Counts of patent labels
+
+744
+118
+131
+7
+
+1,000
+
+3.3.3 Label validation
+
+Clustering the labelled patents using K-means showed that patents with the same
+label are indeed clustered together, validating this strategy. The number of clusters
+was checked using an elbow plot (Figure 3.6). Although there is not one clear elbow,
+the plot indicates that two clusters fit well.
+
+Elbow plot visualising the sum of squared distances between data points and their corresponding
+cluster centroids for different values of K. The elbow method was used to determine the optimal
+K in the K-means clustering of patent embeddings.
+
+Figure 3.6: Elbow plot for K-means clustering
+
+Figure 3.7 shows a Uniform Manifold Approximation and Projection (UMAP) (McInnes,
+Healy, and Melville, 2020) visualisation of the clustering. To check how well the
+projection preserves the data structure, I calculated trustworthiness. This metric
+expresses how much of the original rank order of data points’ K nearest neighbours is
+preserved in the low-dimensional space (Stasis, Stables, and Hockman, 2016). With
+scores of above 0.9 for up to K=50 nearest neighbours, the projection is indicated
+to be a good representation of the original dataset.
+
+21
+
+1084599
+
+UMAP visualisation of K-means Clustering of labelled patents.
+
+Figure 3.7: Clustering of labelled patents
+
+22
+
+1084599
+
+The cluster centres neatly align with the two sustainable AI pillars. Notably,
+Sustainability of AI patents are much more condensed than AI for Sustainability
+patents. This, however, makes sense given that the former are focused on technolo-
+gies relating to the AI pipeline only, while the latter apply AI to a wide range of
+different contexts, explaining the wider spread. Patents concerning both classes are
+mostly grouped along the diagonal, speaking to the idea that while these patents
+are spread more widely than just the AI pipeline, they still capture only a limited
+set of the technological contexts present in the dataset.
+
+3.3.4 Classifier architectures
+
+Conceptually, the two classes AI for Sustainability and Sustainability of AI are
+neither mutually exclusive nor collectively exhaustive. While some patents use AI
+to contribute both to the sustainability of AI itself as well as to the sustainability
+of other processes, others belong to neither class. Given this problem structure, I
+constructed a multilabel classifier. This architecture provides an individual label for
+each possible class, thus allowing for patents to belong to either one, both or neither
+category.
+
+I trained a range of classifier architectures before selecting the best performing model
+to predict labels for all patents in the dataset. I used a 80/20 train-test split on
+the 1000 labelled patents, resulting in 800 observations available for training. Given
+this limited training data set, I applied k-fold cross-validation where I randomly
+split the data into k=5 subsamples. In each fold, I trained the model on 4 samples
+and validated on the remaining one which was alternated in each run. Thus, the
+choice of validation holdout did not influence the model performance, making K-
+fold cross-validation a robust approach, particularly suited for sparse labelled data
+(James et al., 2017).
+
+While the labelled data are imbalanced, no upsampling or reweighting was used.
+In multi-label problems, these strategies tend to result in oversampling of common
+labels and thus introduce bias (Huang et al., 2021). However, to prevent different
+class distributions across train and test splits as well as across validation folds,
+which may impact classifier performance, stratified sampling was used. This method
+divides the dataset into strata according to the class assignment and then selects
+data points from each strata such that the class distribution is equal for each sample
+(i.e., test and train sample as well as each fold in the cross validation) (Neyman,
+1992). To identify the best performing model, all architectures were trained and
+validated on the training dataset while the best performing model was also tested
+on the test set.
+
+3.3.4.1 Model architectures
+
+A range of different classifier architectures were computed. Firstly, I trained clas-
+sifiers based on four different transformer models. These models were chosen due
+to promising results reported in recent patent classification studies (Craswell et al.,
+2020). Transformers are based on a neural network architecture which uses self-
+attention mechanisms to process input data in parallel. This allows the models to
+
+23
+
+1084599
+
+capture words’ contextual meanings including long-term dependencies across text-
+sequences (Vaswani et al., 2017).
+
+BERT: As a baseline, I used a BERT (Bidirectional Encoder Representations from
+Transformers) model (Devlin et al., 2019). This model was chosen since it is one
+of the most influential transformer models and has achieved state-of-the-art results
+across a range of NLP tasks (Koroteev, 2021). It represents text using both left and
+right context and was pretrained on masked language modelling and next-sentence
+prediction using data from the BooksCorpus and English Wikipedia (Devlin et al.,
+2019).
+
+SciBERT: Secondly, I applied a SciBERT model (Beltagy, Lo, and Cohan, 2019).
+Based on the BERT architecture, SciBERT was trained on a corpus of 1.14 mil-
+lion full scientific papers. This domain-specific training may allow the model to
+understand the terminology and structure of scientific and technical documents,
+e.g., patents, more effectively than general-purpose models such as Bert. Especially
+since 18% of the sample comprises research from computer science, SciBERT is a
+promising model basis for classifying AI patents.
+
+PatentSBERTa: Thirdly, I used PatentSBERTa (Bekamiri, Hain, and Jurowetzki,
+2021). Based on Sentence-BERT (SBERT) and RoBERTa, the model is fine-tuned
+with supervised in-domain data from US patent claims. Potentially even more than
+SciBERT, this approach allows the model to capture the particularities unique to
+patents, including the technical jargon used in the texts.
+Initially proposed for
+classifying patents into CPC codes, this model is particularly fit for the purpose at
+hand due to the large database of patents on which it is trained.
+
+For this study, all above models were finetuned to my specific classification task
+using an AutomodelForSequenceClassification structure.5 As input data, I used
+the patent title, abstract and the first 300 words of the description if available.
+Patent titles tend to be very short and generic, so also considering the abstract and
+description can add valuable information. Since patent descriptions usually start
+with a description of the background and problem which a patent is aiming to solve
+(see also Figure 2.2 in Section 2.4), the initial 300 words are likely highly informative
+of the patent domain. On average, the input data consists of 423 words, which are
+well captured by the 512 input tokens of BERT based models (Devlin et al., 2019).
+Even among patents which have a description, the average length is 511 words and
+thus below the maximum token length.
+
+In the hyperparameter tuning, different batch sizes as well as dropout rates and lay-
+ers were tested in a grid search. As an optimizer, I used AdamW with a learning rate
+of 5−5. All other hyperparameters were set to default. As is common for multilabel
+problems, a binary cross entropy loss function with logits loss (BCEWithLogitsLoss)
+was used, which applies a sigmoid layer to the classifier resulting in binary classi-
+fication predictions. Compared to a separate sigmoid function followed by a plain
+binary cross entropy (BCE) loss function, BCEWithLogitsLoss has been shown to
+provide higher numerical stability (Qiu et al., 2023).
+
+5https://huggingface.co/transformers/v3.0.2/model_doc/auto.html, accessed 15.07.2024.
+
+24
+
+1084599
+
+Longformer: While the models discussed above have shown promising results on
+different classification tasks, several scholars contend that BERT-based models are
+not well suited for patent analysis as they cannot capture the full length of patent
+documents (Jiang and Goetz, 2024). To be able to take more text data into account
+in the classification algorithm, I therefore also applied a Longformer model (Beltagy,
+Peters, and Cohan, 2020). By leveraging a local windowed attention combined with
+task motivated global attention which is able to scale linearly with sequence length,
+this model can process documents of up to 4096 tokens, a significant advancement
+compared to the 512 maximum token length of BERT models. Longformer is per-
+tained on masked language modelling and shows state of the art results across a
+number of tasks. In the study, I applied an open sourced LongformerForMultiL-
+abelSequenceClassification algorithm.6
+
+For the Longformer model, I used the patent title, abstract, claims and the first
+3000 words of the description if available. Across all patents, this leads to an aver-
+age document length of 3154 words. When only counting patents exhibiting both a
+description and claims, the average length is 4022 words, i.e., still below the max-
+imum token length of Longformer models. To mitigate memory constraints, the
+batchsize was set to 4 and gradient accumulation with 4 accumulation steps was ap-
+plied. This technique accumulates gradients for several batches instead of updating
+the model weights after every batch, thereby effectively imitating a larger batchsize
+(here 16) while keeping peak memory usage low (Sun, 2019). Again, the AdamW
+optimizer and BCEWithLogitsLoss were used while all other hyperparameters are
+set to default.
+
+3.3.4.2 Loss functions
+
+Secondly, I trained these four model architectures with different loss functions. In
+their baseline version, models were trained with BCEWithLogitsLoss. However, re-
+search indicates that due to the imbalanced class distribution, balancing loss func-
+tions may improve performance. The main idea is to re-weight the BCE loss function
+to give more attention to rare instance-label pairs. In their comparative study of
+different functions in the context of text classification, Huang et al. (2021) find that
+distribution balanced loss (DB) and class balanced focal loss with negative toler-
+ant regularisation (CB-NTR) show the best performance across a range of datasets.
+Following this recommendation, I compared these two loss functions along with the
+traditional binary cross entropy loss function.7
+
+3.3.4.3 Multimodal input data
+
+Thirdly, I trained the four model architectures with different input data. The base-
+line models were trained only using textual data from the patent title, abstract
+and description (and claims for Longformer). As discussed, the combination of text
+
+6https://github.com/jlealtru/website_tutorials/blob/main/notebooks/Multi_label_
+
+classification_longformer_tutorial.ipynb, accessed 15.07.2024.
+
+7The code was used as provided by the paper https://github.com/Roche/BalancedLossNLP,
+
+accessed 15.07.2024.
+
+25
+
+1084599
+
+components is necessary to capture detailed information about a patent. However, I
+also trained the classifiers on a combination of textual data and CPC codes. While,
+as discussed, the codes by themselves may obscure important innovation patterns,
+they do hold relevant information about patent type and domain. When combined
+with textual data, they may boost performance for the classification task. For this,
+I concatenated the document embeddings with a binarised matrix of the CPC codes
+before passing this information into the drop-out, batch normalisation and fully
+connected layers.
+
+3.3.5 Model evaluation
+
+For evaluation, I used the macro F1 score. This multilabel extension to the tradi-
+tional F1 score, i.e., the harmonic mean of precision and recall, takes the unweighted
+average of F1 scores across classes. Since the dataset is imbalanced but all classes
+are equally important to the analysis, this metric is highly suited for the analysis
+(Banerjee et al., 2019). For all models, average performance across the validation
+folds is reported. In addition, I report the performance of the best model on the
+test data.
+
+3.3.5.1 Overview of classifier architectures
+
+Figure 3.8 presents an overview over all tested classifier architectures. Excluding
+hyperparameter tuning, the variations described above result in 24 overarching clas-
+sifiers (4 models x 3 loss functions x 2 input data types). All models were trained
+with 5-fold cross validation on 5 epochs to prevent overfitting. Each of the Bert-
+based models was trained on two batch-sizes (16 and 32) and four drop-out layer
+constellations. For the Longformer models, computational costs were much higher
+such that no hyperparameter tuning was conducted. Including hyperparameter tun-
+ing, 222 models were trained.
+
+To obtain final predictions on unlabelled data, the best performing model was again
+trained on all available labelled instances and then used to predict classes of unla-
+belled data.
+
+3.4 Content analysis
+
+After identifying the best-performing classifier, and predicting labels for all instances
+in the dataset, I used topic modelling to analyse patent contents. Traditionally, topic
+modelling methods such as Latent Dirichlet Allocation were based on bag-of-words
+representations of documents which disregard any semantic relationships between
+words. However, with the emergence of advanced embedding models such as BERT,
+new approaches have been proposed, including BERTopic (Grootendorst, 2022).
+This model produces state-of-the-art results in topic extraction tasks, making it an
+ideal choice for this thesis. BERTopic takes document embeddings as inputs, reduces
+their dimensionality, and then uses HDBSCAN to cluster them based on their prox-
+imity in the vector space. This results in clusters of semantically similar documents,
+i.e., "topics". To generate embeddings, the sentence-transformer implementation of
+
+26
+
+1084599
+
+Figure 3.8: Overview of classifier architectures
+
+Specter (Cohan et al., 2020) was used.8 Built on SciBERT, this model is specifically
+trained on citation data to model inter-document relationships. This tends to result
+in more compact topic clusters in the embedding space, motivating my choice. Since
+Specter is a transformer-based model, no pre-processing (e.g., stopword removal) is
+required.
+
+3.4.1 AI for Sustainability
+
+To analyse AI for Sustainability patents by sector, I first identified topics with
+BERTopic. Then, a Llama 3 model was used to provide concise topic labels and de-
+scriptions. Launched by Meta in 2023, the open-source Llama model series (Touvron
+et al., 2023) is a family of auto-regressive LLMs using the Transformer architecture.
+The Llama 3 models, released on April 18, 2024, achieve state-of-the-art performance
+across a variety of NLP tasks, outperforming many closed-source LLMs including
+GPT-3. In this study, the 8 billion parameter version of the instructor model is used
+(aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF).9 Due to the large size, the model
+was quantized to 4-bit using the transformers bitsandbytes implementation.10 Top-
+ics were then reviewed and manually clustered into technology groups and sectors.
+
+8https://huggingface.co/sentence-transformers/allenai-specter, accessed 15.07.2024.
+9https://huggingface.co/aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF, accessed 15.07.2024.
+10https://huggingface.co/docs/transformers/main/en/quantization/bitsandbytes,
+accessed
+
+15.07.2024.
+
+27
+
+1084599
+
+3.4.2 Sustainability of AI
+
+To analyse Sustainability of AI innovation along the AI pipeline, BERTopic was
+used in a zero-shot setting. This technique allows users to find predefined topics
+in a dataset making it perfectly suited for cases such as here, where a specific con-
+ceptualisation of topical clusters is of interest (i.e., innovation along the AI pipeline
+as conceptualised by Wu et al. (2022)). In practice, the model embeds pre-defined
+topic descriptions and compares document embeddings using cosine similarity. The
+zero-shot topic descriptions used here are listed in Appendix B. To validate the topic
+model, 20 patents out of each cluster were manually reviewed. This process showed
+that the clusters produced by the model contained highly relevant patents, speaking
+for the validity of the approach.
+
+3.4.3 Environmental impact
+
+In the next step, I analysed the environmental impacts targeted in Sustainability
+of AI patents. Since patents concentrate on presenting the detailed workings of an
+invention, the environmental impact improvements promised by a technology are
+often mentioned only briefly. Accordingly, applying a topic model to this task re-
+sulted in no meaningful clustering of the patents. Instead, a keyword search was
+used. While rather simplistic, this methodology is a straight-forward and widely
+used approach to identify whether a specific issue is discussed in a document, even
+if mentioned only briefly. The four main environmental impacts of AI suggested by
+the literature relate to energy consumption, water consumption, waste and resource
+depletion, particularly rare metals which are crucial for many hardware components
+(Ligozat et al., 2022). For each impact category, a list of keywords was curated to
+capture relevant patents (see Appendix C). Patents can fall under several categories
+and those which do not fall under any category were counted as "other". Impor-
+tantly, for this analysis only those patents were considered for which a description
+was available. This is because the patent title and abstract tend to only focus on
+the technical functioning of an invention. The description also includes details on
+the problem an invention aims to solve, making it likely that information about the
+environmental impact focus of a patent is contained there. Note, however, that this
+reduces the number of patents in the analysis, as not all for all patents in the dataset
+a description was available.
+
+3.5 Actor identification
+
+To analyse which actors most commonly patent sustainable AI technologies, I finally
+investigated assignees based the number of patents they hold. Patent assignees
+are the legal owners of a patent, i.e., the actor who has exclusive ownership over
+the patented technology (Azzam, 2009). Additionally, I analysed the geographic
+distribution of actors by calculating patent numbers by the country of residence of
+the assignee.
+
+28
+
+4 | Results
+
+In the following, I will present my results. First, I review the performance of dif-
+ferent classifier architectures designed to distinguish between innovation in AI for
+Sustainability and Sustainability of AI and identify the best performing model. This
+provides the basis for the subsequent content analysis, where I will investigate each
+subquestion to unveil whether patents, analysed using NLP methods, constitute a
+relevant element of inquiry to improve our understanding of innovation within of
+sustainable AI.
+
+4.1 Classification results
+
+Table 4.1 summarises the performance of all 24 classifier architectures.
+
+Model
+
+Input Data
+
+Loss Function Macro F1 Accuracy
+(Val avg)
+
+(Val avg)
+
+BERT
+
+SciBERT
+
+PatentSBERTa
+
+TAD
+
+TAD + CPC
+
+TAD
+
+TAD + CPC
+
+TAD
+
+TAD + CPC
+
+TADC
+
+Longformer
+
+TADC + CPC
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+BCE
+DB
+CB-NTR
+
+0.861
+0.840
+0.841
+
+0.834
+0.845
+0.841
+
+0.871
+0.856
+0.849
+
+0.844
+0.841
+0.858
+
+0.874
+0.866
+0.836
+
+0.831
+0.828
+0.848
+
+0.786
+0.786
+0.823
+
+0.754
+0.795
+0.809
+
+0.844
+0.835
+0.859
+
+0.862
+0.850
+0.861
+
+0.860
+0.845
+0.870
+
+0.863
+0.862
+0.881
+
+0.851
+0.841
+0.871
+
+0.825
+0.849
+0.862
+
+0.460
+0.460
+0.857
+
+0.731
+0.704
+0.832
+
+Abbreviations: TADC - title, abstract, description, claims; CPC - CPC codes; BCE - binary
+cross entropy loss; DB - distributed loss; CB-NTR - class balanced focal loss with negative
+tolerant regularisation
+Three decimal places are shown to expose marginal differences. Best result per transformer
+model in bold, overall best result in green.
+
+Table 4.1: Classifier performance
+
+The best performing model uses SciBERT and multimodal input data with a CB-
+NTR loss function. In the cross validation, this model reaches an average macro-F1
+score of 88.1% and an average accuracy of 85.8%. On the test set, the model reaches
+a macro-F1 score of 86.4% and an accuracy of 84.5%. The slight difference in scores
+
+29
+
+1084599
+
+is likely due to statistical fluctuations: Across the five folds of the cross-validation,
+the macro-F1 score ranges between 86.6% and 91.6%, indicating that the test set
+performance may also fall within 2-4 percentage points around the average.
+
+Figure 4.1 displays the confusion matrix of true and predicted labels in the test set.
+The model performs well in identifying AI for Sustainability patents with a sensi-
+tivity (true positive rate) of 89.3%. With 66.7%, the sensitivity for Sustainability of
+AI patents is slightly lower. However, in both cases, most misclassified patents were
+predicted to belong to both classes. Thus the model at least partially recognised
+the correct class. Patents that actually belong to both classes were identified with
+a sensitivity of 62.1%. Here, all incorrect predictions were classified to concern only
+one instead of both branches, thus still partially recognising the correct class. The
+test set contains no patents that belong to neither class.
+
+Confusion matrix of true and predicted labels of the best performing model (SciBERT with
+multimodal input data and a CB-NTR loss function) on the test set.
+
+Figure 4.1: Confusion matrix of true and predicted labels on the test set for best
+performing model
+
+To most effectively predict labels for unseen patents in the dataset and analyse
+the subquestions, the best performing model was trained once more using all 1000
+
+30
+
+1084599
+
+labelled instances.
+
+4.2 SQ 1: Balance in innovation activity
+
+In the content analysis, I first assess how innovation activity is balanced between the
+fields of Sustainability of AI and AI for Sustainability. Applied to the full dataset
+of 20,445 patents, the classifier predicts 17,302 patents (84.6%) to belong to the
+category "AI for Sustainability" and 548 patents (2.7%) to belong to "Sustainability
+of AI". 95 (0.5%) are predicted to belong to neither and 2,500 patents (12.2%) are
+predicted to belong to both classes (see Figure 4.2). This means that more than
+97% of inventions relate to AI for Sustainability, while less than 15% relate to the
+Sustainability of AI. This extreme imbalance in innovation activity is noteworthy
+and indicates that, in line with the wider discourse, applying AI is much more
+popular than working on reducing its environmental impact.
+
+Predicted labels of the best performing model (SciBERT with multimodal input data and a
+CB-NTR loss function) on the full dataset.
+
+Figure 4.2: Predicted labels for full dataset
+
+4.3 SQ 2: AI for Sustainability innovation
+
+Next, I analyse how AI for Sustainability innovation is clustered across different
+sectors and technologies. For this, I consider all patents classified as concerning
+
+31
+
+1084599
+
+Sunburst chart of AI for Sustainability clusters organised by sector. Clusters were obtained using
+a BERTopic model and were manually organised into sector groups.
+
+Figure 4.3: AI for Sustainability innovation by sector and technology
+
+32
+
+1084599
+
+either only AI for Sustainability or both classes. Figure 4.3 displays a sunburst chart
+visualising the clusters identified with the topic model. The clusters were manually
+organised into a hierarchical structure, where the inner circle of the sunburst chart
+represents sectors, the middle circle shows technology groups and the outer circle
+includes specific technologies.
+
+Overall, it is notable how widely the applications are spread, spanning six different
+sectors: energy, mobility, electronics, information and communication technology
+(ICT), production/manufacturing and environment. Most commonly, AI is applied
+in the context of sustainability in the energy sector (30.1% of patents). Within this
+sector, AI is applied to power conversion on the one hand. This group captures tech-
+nologies for power transfer, voltage regulation, and Electric Vehicle (EV) charging.
+On the other hand, AI is used for different types of energy production, including
+wind, solar, thermal, gas and nuclear energy, as well as fuel cells. This speaks to the
+idea that diverse opportunities arise for sustainable AI applications in the energy
+sector, potentially motivating closer attention from policy and funding.
+
+The second largest sector is mobility (20.9% of patents). This sector uses AI mostly
+to make automotive technologies more sustainable, for instance through vehicle
+transmission systems, such as designs for gear pairs, clutches and selective engage-
+ment mechanisms to improve vehicle efficiency. Within electronics, the third-largest
+sector (20.2%), AI applications focus mainly on batteries including battery design,
+charging and monitoring, and on lighting. Fourthly, AI is used to improve environ-
+mental sustainability in ICT (12.5% of patents). Here, AI is mostly used in sen-
+sor technologies, wireless communication systems, mobile devices and touchscreen
+design. Within production and manufacturing (8.7%), the fifth largest sector, sus-
+tainable AI innovation has two main pillars: smart production systems, where data
+analysis is used to optimise manufacturing processes, as well as hybrid production
+methods, where 3D printing and subtractive processes (e.g., grinding or drilling) are
+combined in the same machines to improve efficiency in the fabrication of products.
+Finally, AI is also applied to specifically environment-related technologies (7.6%).
+For instance, it finds application in waste treatment, air filtering, carbon capture
+and removal as well as agriculture (e.g., hydroponics).
+
+4.4 SQ 3: Sustainability of AI innovation
+
+Next, I analyse how Sustainability of AI innovation is clustered along the AI pipeline.
+I start with an analysis of those patents which only concern Sustainability of AI but
+not both classes. This is because many more patents relate to both rather than just
+the one class such that a wider view may obscure more fine-grained patterns.
+
+Generally, with only 548 patents focusing exclusively on the Sustainability of AI,
+the entire pipeline attracts very little patenting activity. Figure 4.4 displays how
+innovation is clustered across the AI pipeline. This shows in even more detail,
+how patenting numbers in the field are extremely low. In the high-level overview,
+innovation shows a strong focus on AI operations (473 or 86.3% of patents) over
+data collection technologies such as sensors and tracking devices (75 or 13.7%).
+
+33
+
+1084599
+
+Innovation clusters obtained using a zero-shot BERTopic model. Clusters were aligned along the
+AI pipeline, with zoom-ins to detail distributions. a) to d) present example patents for each AI
+operation.
+
+Figure 4.4: Overview of Sustainability of AI innovation clusters along the AI pipeline
+(Sustainability of AI only)
+
+Within AI operations, the smallest cluster relates to AI platform technology, com-
+prising 6.1% or 27 patents. Platforms are frameworks providing the necessary soft-
+ware infrastructure and interfaces for using AI models and can span across the entire
+workflow, from data preparation to model design and training. An example patent
+of this cluster (publication number: EP4127908A1) proposes a processing system
+that uses a compiler to automatically identify and replace source code with high-
+performance tensor operations executable by a specialised hardware accelerator (e.g.,
+a GPU). Thus, it integrates the optimisation of code execution on a platform-level,
+facilitating sustainable computing for users.
+
+The next largest cluster comprises specific AI model architectures. This cluster in-
+
+34
+
+1084599
+
+cludes 13.6% of operations patents, with a total of 64 patents. For instance, one
+patent (publication number: EP3612937A1) proposes a neural network architecture
+with dynamic sequencing of data partitions. This prioritizes fully processing one
+layer of the network before moving on to the next layer while being able to adapt
+dynamically based on memory availability, thus improving memory utilisation and
+performance. Thirdly, 167 operations patents (35.3%) relate to specialised AI hard-
+ware. For instance, one patent (publication number: EP3612937A1) proposes a
+technology that uses entropy as an efficient hardware implementation method for
+ant colony optimization for designing circuits.
+
+The largest group of operations patents (45.0% or 213 patents) relate to general
+AI infrastructure. Within AI infrastructure, technologies can be further clustered
+in network connectivity (11.7%), storage (31.5%) and general hardware (56.8%),
+with the latter including for instance power supply and conversion as well as cooling
+systems needed for efficient and reliable computing. An example patent (publication
+number: EP3823245A1) relating to network technology proposes a switch circuitry,
+a hardware component which manages the data traffic between different devices in
+a network.
+
+Innovation clusters obtained using a zero-shot BERTopic model. Clusters were aligned along the
+AI pipeline, with zoom-ins to detail distributions.
+
+Figure 4.5: Overview of Sustainability of AI innovation clusters along the AI pipeline
+(wider definition)
+
+When considering the wider definition of Sustainability of AI patents, i.e., also
+those patents which at the same time relate to AI for Sustainability, the proportions
+change drastically with the vast majority of patents relating to general hardware
+infrastructure (see Figure 4.5). This is intuitive: technologies in the overlap concern
+for instance electronic components which can be used across a variety of contexts
+
+35
+
+1084599
+
+including but not limited to AI.
+
+4.5 SQ 4: Environmental focus of Sustainability of
+
+AI inventions
+
+In the next step, I analyse which environmental impact dimensions are the focus of
+Sustainability of AI inventions. Figure 4.6 displays the distribution of patents by
+environmental focus. As discussed earlier, this analysis includes only those patents
+where a patent description was available, explaining the lower overall patent counts.
+
+Treemap plot of Sustainability of AI patents by environmental impact focus. Patents are
+included if words related to a type of environmental impact are mentioned in abstract or
+conclusion. Patents can be included in several categories and publications without description are
+excluded. On the left, patents only falling into the Sustainability of AI class are presented. On
+the right, patents falling into both categories are included.
+
+Figure 4.6: Sustainability of AI patents by environmental impact focus
+
+Both when considering only Sustainability of AI specific patents as well as when
+including patents falling under both classes, the vast majority of inventions focus
+on reducing energy consumption (63% and 62%). Within the former group, waste
+is the second largest environmental impact focus, with 13% of patents relating to
+reducing waste or toxicity, for instance by improving product lifespan. Only 6%
+of patents focus on reducing the consumption of rare metals and only one patent
+discusses the reduction of water consumption. Within the wider Sustainability of
+AI definition, the focus on rare metals is more prevalent than waste, pointing to the
+idea that many of the general AI infrastructure inventions improve on the usage of
+rare metals. Again, water is by far the smallest focus area, with 4 patents focusing
+on this impact factor.
+
+36
+
+1084599
+
+4.6 SQ 5: Major actors in sustainable AI patenting
+
+Finally, I investigate the major actors patenting solutions in sustainable AI. Figure
+4.7 shows the top 20 patent assignees in sustainable AI.
+
+On the left, top assignees by number of patents are displayed. On the right, assignees are
+clustered by sector focus.
+
+Figure 4.7: Top 20 patent assignees in sustainable AI
+
+The market is highly fragmented. The top assignee Siemens holds less than 3%
+Interestingly, the top assignees do not include typical AI
+of patents in the field.
+companies. Instead, most of the companies operate in industrial engineering (mostly
+automotive) or electronics. Two players produce semi-conductors and one firm is
+in renewable energy. Analysing assignees by country reveals that the largest share
+of European sustainable AI patents, i.e., 4,000 patents or 19.6%, are held by US
+American firms (see Figure 4.8). With ca. 3,000 patents each, Germany and Japan
+are the second and third largest sustainable AI patent holders. Interestingly, when
+looking at the top five countries, only one European country is included, while three
+Asian countries are (Japan, China, Korea).
+
+4.7 Patents as a framework of sustainable AI inno-
+
+vation
+
+These analyses illustrate how patents, when analysed using NLP, can illuminate
+large-scale innovation patterns, specific inventions and important actors. These
+relevant insights indicate that patents do indeed provide a relevant element of inquiry
+to improve our understanding of innovation within the field of sustainable AI.
+
+37
+
+1084599
+
+Figure 4.8: Sustainability of AI patents by country
+
+38
+
+5 | Discussion
+
+5.1 Principal findings
+
+This thesis has investigated patents as a data source and framework for innovation
+analysis in sustainable AI. I find that NLP-based patent analysis can contribute
+immensely to a profound understanding of innovation in this area by illuminating
+patterns in innovation activity, content, and actors. Using a text-based classifier, I
+reveal that innovation activity in AI for Sustainability hugely outweighs Sustainabil-
+ity of AI. Within the former, research is largely focused on the energy, mobility and
+electronics sectors. Within the latter, innovation shows a strong focus on specialised
+AI hardware and AI infrastructure. Notably, Sustainability of AI patents mostly
+tackle the energy consumption of AI systems, while other environmental impacts
+such as water consumption remain highly understudied. Finally, I find that the sus-
+tainable AI patent landscape is highly fragmented, with most assignees being based
+in the US, Germany and Japan. Interestingly, the most prominent AI players do not
+emerge as major actors within sustainability. These results powerfully illustrate that
+patents constitute a highly relevant element of inquiry which substantially improves
+our understanding of innovation in sustainable AI.
+
+5.2 Patent classifier
+
+Before interpreting my results, I will briefly discuss the sustainable AI classifier which
+provides the methodological foundation of this study. As anticipated, both using an
+alternative loss function as well as including multimodal input data improved the
+classifier performance. However, the superior performance of the SciBERT model ar-
+chitecture is noteworthy. Despite PatentSBERTa’s finetuning on patent data and the
+Longformer model’s capability to process more text, SciBERT, which was finetuned
+on general scientific literature, emerged as the best model. A possible explanation
+is that SciBERT was extensively trained on computer science literature. Since the
+sustainable AI patents considered here closely relate to this field, the model may be
+particularly fit for the task. Another reason may be that PatentSBERTa is trained
+on US instead of European patents which may differ systematically, explaining the
+lower performance.
+
+The top-performing model excels in correctly identifying AI for Sustainability patents,
+but performs slightly less well for Sustainability of AI patents or patents classified
+under both classes. This may be due to the imbalanced label distribution, where
+the classifier was exposed to a significantly larger number of AI for Sustainability
+patents compared to the other two categories. Nonetheless, the overall performance
+is very high, especially compared to other AI-related patent classification studies.
+There, common F1 score levels range between 0.4 and 0.6 (Giczy, Pairolero, and
+Toole, 2022; S. Li et al., 2018) which is much lower than the 0.88 achieved by
+my best-performing model. This allows for high confidence in the classifier as the
+foundation of this study.
+
+39
+
+1084599
+
+5.3 Contextualisation in the wider literature
+
+I now interpret my findings which provide pioneering insights into innovation pat-
+terns in sustainable AI.
+
+5.3.1 SQ 1: Balance in innovation activity
+
+The first main insight revealed in this study is that there is an extreme imbalance
+between innovation activity in the fields of AI for sustainability and Sustainability
+of AI. More than 97% of inventions pertain to the former while less than 15%
+address the latter.1 This disparity is deeply worrying, given that both dimensions
+are valuable and necessary components of establishing sustainable AI. The limited
+attention on the Sustainability of AI is particularly alarming as the AI market and
+therefore its environmental impact continues to grow (Bashir et al., 2024; Grand
+View Research, 2024a). Limiting these damages should be a top priority.
+
+To actually prioritise the Sustainability of AI, it is imperative first to acknowledge
+the harm incurred by AI systems. As discussed, large AI companies, industry and
+political experts, often portray AI as the (sole) solution to global challenges. How-
+ever, this narrative obscures the immense environmental costs of these technologies,
+hindering the effective alignment of AI with sustainability. To counter these mis-
+leading perceptions of AI, educational efforts and realistic reporting are essential.
+Secondly, effective policies must be implemented to incentivise green AI innovation.
+For instance, this could be achieved by conditioning R%D funding for AI research
+on efforts such as the usage of renewable electricity or the development of energy
+efficient equipment (Cowls et al., 2021, p. 302).
+
+5.3.2 SQ 2: AI for Sustainability innovation
+
+Analysing AI for Sustainability patents individually showed that AI models are
+applied to a variety of sectors and technologies. Cowls et al. (2021) argue, that
+this should be considered a positive dynamic: climate change comes with a host of
+challenges and damages, many of which are extremely severe. This offers a wide
+array of options to use AI for good and harness it to its full potential. With the
+largest cluster of AI for Sustainability patents focusing on the energy sector, it also
+appears that innovators are working on one of the most powerful levers. Energy
+supply (electricity and heat production) causes almost 50% of all European CO2
+emissions (International Energy Agency, 2021). Using AI to integrate renewable
+sources or to forecast supply and demand for optimal energy distribution (Serban
+and Lytras, 2020) is thus an important step towards more sustainable societies.
+
+While innovation in AI for Sustainability therefore gives rise to hope, it is crucial to
+not that applying AI with the aim of furthering sustainability does not guarantee
+a positive outcome. Due to high computational costs, some AI applications may
+create more harm than they mitigate. To avoid this, it is imperative to establish
+
+1Note that these numbers do not add up to 100% because 12% of inventions relate to both
+
+fields.
+
+40
+
+1084599
+
+consistent measurement and reporting standards for the environmental impacts of
+algorithms (Cowls et al., 2021; Henderson et al., 2020; Lacoste et al., 2019; Ligozat
+et al., 2022). Patents could play an important role in this. If inventors were required
+to detail and quantify how a technology enhances sustainability while considering
+its environmental costs, this could expose potentially harmful projects and provide
+an incentive to develop better products.
+
+5.3.3 SQ 3: Sustainability of AI innovation
+
+Analysing patents along the AI pipeline revealed that innovation focuses on AI
+operations rather than data collection, with significant efforts on specialised AI
+hardware and infrastructure innovation. While, as discussed, it is obvious that all
+of these areas are highly understudied, it remains unclear whether the distribution
+of innovation efforts, too, needs steering. One study on AI operations at Meta
+suggests that iterative optimisations across different optimisation areas can result
+in substantial power emission reductions, indicating the a wide spread of innovation
+is favourable (Wu et al., 2022). However, more robust insights are needed detailing
+which optimisation areas may hold the most potential for reducing the environmental
+impacts of AI systems. For this, it is necessary to go beyond studying separate
+elements of the pipeline, e.g., specific model architectures and their carbon footprints
+(Chien et al., 2023; Naidu et al., 2021; Patterson et al., 2021; Verdecchia et al., 2022),
+and compare different elements in their capacity to improve sustainability. This will
+allow practitioners and policymakers to optimally choose which problems to work
+on and thereby accelerate the journey to more sustainable AI systems.
+
+5.3.4 SQ 4: Environmental focus of Sustainability of AI in-
+
+ventions
+
+When examining the environmental impacts targeted by Sustainability of AI inno-
+vation, it stands out that most patents focus on improving the energy consumption
+of AI systems. Crucially, making systems more energy efficient is a key lever to lim-
+iting the carbon emissions of the sector and combating the climate crisis (Shenoy,
+2023). However, to ensure that efficiency gains actually translate into lower overall
+emissions, policy intervention is needed. This is because, paradoxically, improving
+the efficiency of AI could actually increase the overall AI carbon footprint. Known
+as Jevon’s paradox, resource efficiency can function as a stimulus, incentivising the
+creation of additional novel AI use cases (Nishant, Kennedy, and Corbett, 2020;
+Widdicks et al., 2023). To avoid this trap, macroeconomic studies point to the im-
+portance of environmental policy interventions such as taxation or cap-and-trade
+systems (Freire-Gonzalez, 2021; Mashhadi Rajabi, 2022; Widdicks et al., 2023).
+
+While a considerable number of patents focus on the energy consumption of AI sys-
+tems, other environmental impacts remain neglected. This is highly problematic as
+AI systems come with a range of dangerous consequences (Wright et al., 2023). For
+instance, reducing the need for rare metal in the production of hardware components
+is discussed in only 10% of patents. However, mining such metals drives deforesta-
+tion and has been shown to produce pollutants and hazardous materials which enter
+
+41
+
+1084599
+
+food and water supplies (Balaram, 2019; Nayar, 2021; Siqueira-Gay and Sanchez,
+2020). Similarly, the (e-)waste produced by AI systems, which even less than 10%
+of patents mention, can lead to hazardous chemicals entering water supplies. This
+can have catastrophic affects on the health of local communities (Forti et al., 2020;
+Nayar, 2021). Finally, the water consumption driven by electricity generation and
+hardware cooling is a substantial factor in worldwide water scarcity (P. Li et al.,
+2023; Mytton, 2021), exacerbating droughts and even limiting local communities
+access to clean freshwater (Bast et al., 2022). The low number of patents working
+on alleviating these environmental consequences is alarming and reflects the minimal
+regulatory attention given to non-energy related impacts of AI (Coeckelbergh and
+Saetra, 2023; Kak and Myers West, 2023). This study thus underscores the urgent
+need for effective policy to stimulate diverse innovation that mitigates the myriad
+of environmental consequences caused by the AI sector.
+
+5.3.5 SQ 5: Major actors in sustainable AI patenting
+
+Finally, this thesis finds that the sustainable AI patenting landscape is highly frag-
+mented. The top assignee Siemens holds only 3% of patents. On the one hand,
+this could be a positive sign indicating that a range of companies are interested in
+innovating in this area. However, the overview of top assignees also suggests that
+sustainability is not yet an important field for core AI players. IBM, Microsoft and
+Google held 34%, 24% and 19%, respectively, of all AI patents in 2018 (Habibollahi
+Najaf Abadi and Pecht, 2020). Combined, these three companies therefore owned
+77% of all patented AI innovation. Yet, they do not hold anywhere near as large a
+share of sustainability patents and do not even appear in the top 20 assignees. Given
+how much intellectual prowess and resources are concentrated in these firms, it is
+alarming how little they contribute to the field of sustainable AI. Designing policy
+requiring powerful firms to focus more effort on this field could unlock substantial
+funds and progress, necessary for achieving genuinely sustainable AI.
+
+I also find that patent assignees in sustainable AI are highly concentrated in high
+income countries, especially the USA, Germany, and Japan. On the one hand, this
+is highly problematic because it extends, and creates new, long term dependencies
+where especially lower and middle income countries can no longer catch up to the
+technological frontier, leaving them reliant on richer economies (Hartmann et al.,
+2021; D. Li et al., 2023). However, improvements in the sustainability of AI systems,
+even if proposed in Europe or the US, could also widen access to AI. By lowering
+the energy and resource consumption of models, AI can be used in contexts were
+fewer resources are available (Fan, Yan, and Wen, 2023). By facilitating the use of
+AI in healthcare or energy management, sustainability innovation could thus unlock
+enormous benefits.
+
+5.3.6 Patents as a framework of sustainable AI innovation
+
+Overall, my findings illustrate the immense potential of investigating sustainable
+AI through the lens of patents. By illuminating large-scale patterns in innovation
+activity, content, and actors, patent analysis can contribute substantially to our
+
+42
+
+1084599
+
+understanding of innovation in this field. The insights generated by this can in turn
+function as a crucial policy guidance, informing three key takeaways. Firstly, more
+research in Sustainability of AI must be incentivised, which focuses on a range of
+different environmental impacts. Secondly, better reporting of the sustainability
+contribution of AI for Sustainability inventions is required, where patents could
+provide a useful framework. Thirdly, influential and resourceful AI players must
+be incentivised to contribute more towards the sustainability of the sector. By
+addressing these areas, we can pave the way for an environmentally conscious AI
+landscape.
+
+5.4 Limitations
+
+This thesis is subject to several limitations, concerning, on the one hand, patents
+as a data source, and on the other hand, the conducted NLP analysis. As dis-
+cussed, patents cannot account for the specific contexts within which a technology
+is produced, distributed and applied. "Sustainable" patents may therefore propose
+technologies that could reduce environmental impacts, but it is not certain that they
+are always used in the way intended, and how they are embedded in supply chains.
+For instance, more efficient GPUs contribute little to the sustainability of AI sys-
+tems when they are severely under-utilised as is often the case (Wesolowski et al.,
+2021). Similarly, efficiency-enhancing technologies when applied to "dirty" sectors
+such as oil and gas can actually cause more harms than benefits (Coeckelbergh and
+Saetra, 2023).
+
+Patents also capture only a subset of innovation. While I argue that this subset
+is of relevant size and content, it must be acknowledged that many inventions are
+not patented. Specific AI models, for instance, are often protected by trade-secrecy
+rather than patents in order to have more flexibility (La Diega, 2018). Especially
+academic researchers and smaller companies may forgo protection altogether and
+open-source their inventions (Calvin and Leung, 2020).
+
+Regarding the NLP analysis, one shortcoming relates to the labelling. Due to limited
+resources, only 1000 patents were hand labelled and all labelling was performed by
+the author with no additional human validation. While clear inclusion and exclusion
+criteria were laid out and clustering validates the labelling results, this limitation
+may have resulted in some bias in the data. A second shortcoming is that the
+topic modelling comes with some simplifications. Not only does this approach often
+focus on large scale patterns while potentially obscuring more fine-grained dynamics.
+I also model topics as static over time, when especially AI as field is advancing
+quickly meaning that topics may change. Nonetheless, due to the careful manual
+validation as well as the presentation of specific example patents, I argue that the
+topic modelling performed here can still give reliable and accurate insights into
+sustainable AI innovation.
+
+43
+
+1084599
+
+5.5 Avenues of future research
+
+The findings of this study point to several avenues worthy of further attention. These
+can be clustered into four strands. Firstly, this thesis reveals the urgent need for
+more research aiming to make AI more sustainable. Secondly, additional evidence
+is required which illuminates which areas of the AI pipeline yield the most potential
+to improve the sustainability of AI systems and should thus be focused on. Thirdly,
+this analysis of European patents should be complemented with research focusing
+on other regions as well as open-source innovation, for instance analysing activity
+on GitHub. Finally, by showing how patents can illuminate innovation patterns, I
+hope to inspire further inquiry into this methodological approach. Future research
+could focus on other sectors and test other NLP models in their capacity to provide
+large-scale, policy-informing evidence.
+
+44
+
+6 | Conclusion
+
+In recent years, the idea of harnessing AI to combat the climate crisis has gar-
+nered considerable attention. Pioneering initiatives are utilising AI to tackle diverse
+challenges, from flood prediction to ocean cleanup. However, it is often overlooked
+that the AI sector itself is a significant contributor to greenhouse gas emissions and
+environmental degradation. To establish AI that aligns with environmental sustain-
+ability, it is imperative to address these two facets concurrently: we must deploy
+AI to further sustainability (AI for Sustainability) and work on making AI itself
+more sustainable (Sustainability of AI ). Crucially, the current techno-solutionist
+discourses around AI suggest that, without effective policy intervention, innovation
+efforts will not be optimally balanced between these two aspects. However, with the
+climate crisis exacerbating rapidly, we cannot afford to maintain unsustainable AI
+systems. Thus, to ensure that researchers and developers focus on the most press-
+ing issues, it is crucial to survey innovation efforts, identifying both progress and
+existing gaps. To this aim, the present thesis investigates whether patents, analysed
+using NLP techniques, can provide a relevant element of inquiry for enriching our
+understanding of innovation in the field of sustainable AI.
+
+Using a text-based classifier, I reveal that the Sustainability of AI is severely under-
+researched, particularly when thinking beyond energy consumption as the sole en-
+vironmental cost of AI systems. Further, powerful AI players show alarmingly little
+interest in sustainable AI innovation, with efforts instead stemming from electronics
+and industrial engineering companies. However, there is also cause for hope: While
+being in the early stages, innovation activities in both AI for Sustainability and
+Sustainability of AI show a diverse range of approaches and ideas. With patent-
+ing in sustainable AI on a strong upward trajectory, these hopefully represent just
+the beginning of the progress necessary to align AI with environmental sustainabil-
+ity. Overall, these insights reveal that patents, analysed using NLP, constitute a
+highly relevant element of inquiry to improve our understanding of sustainable AI
+innovation.
+
+My results have important implications. Firstly, they powerfully illustrate the urgent
+need for better policies, steering the AI sector toward sustainability. Specifically,
+three key recommendations emerge. Firstly, stronger incentives are needed for com-
+panies to engage in sustainable AI innovation, particularly inventions focusing on the
+Sustainability of AI which take into account the variety of environmental damages
+caused by AI. Secondly, we require better reporting of the sustainability contribu-
+tion of AI for Sustainability inventions to avoid the promotion of technologies which
+cause more harm than benefits. Thirdly, especially major AI players must be incen-
+tivised to leverage their enormous resources to improve to the sustainability of the
+sector. As a second contribution, my findings illuminate the immense potential of
+using NLP-based patent analysis to investigate innovation activity. By providing a
+labelled dataset and a classifier to distinguish between inventions in AI for Sustain-
+ability and Sustainability of AI, I hope to facilitate future research in this critical
+field. At the same time, the methods applied here could be used to study other
+sectors and technology fields and generate large-scale, policy-informing evidence.
+
+45
+
+1084599
+
+Finally, this thesis highlights one more takeaway. While companies like Google are
+painting optimistic pictures of AI as the solution to global challenges, the empirical
+evidence on the trajectory of sustainable AI innovation suggests a different reality.
+Without careful and effective policy guidance, it remains uncertain whether these
+colourful dreams of "sustainable AI" will, or should, come true.
+
+46
+
+Bibliography
+
+Adams, R., Jeanrenaud, S., Bessant, J., Denyer, D., & Overy, P. (2016). Sustainability-
+
+oriented Innovation: A Systematic Review. International Journal of Manage-
+ment Reviews, 18 (2), 180–205. https://doi.org/10.1111/ijmr.12068
+AI4SDG Think Tank. (2024). AI for SDGs Observatory. Retrieved April 28, 2024,
+from https : / / ai - for - sdgs . academy / observatory # 12 % 20Responsible %
+20Consumption%20and%20Production
+
+Akter, M. S. (2024). Harnessing technology for environmental sustainability: Utiliz-
+ing AI to tackle global ecological challenge. Journal of Artificial Intelligence
+General science (JAIGS) ISSN: 3006-4023, 2 (1), 61–70. Retrieved July 2,
+2024, from https://ojs.boulibrary.com/index.php/JAIGS/article/download/
+97/65
+
+Amodei, D., & Hernandez, D. (2018). AI and compute. Retrieved June 13, 2024,
+
+from https://openai.com/index/ai-and-compute/
+
+Aslam, S., Herodotou, H., Mohsin, S. M., Javaid, N., Ashraf, N., & Aslam, S. (2021).
+A survey on deep learning methods for power load and renewable energy
+forecasting in smart microgrids. Renewable and Sustainable Energy Reviews,
+144, 110992. https://doi.org/10.1016/j.rser.2021.110992
+
+Azzam, A. (2009, December). Public Policy in Food and Agriculture. EOLSS Publi-
+
+cations.
+
+Balaram, V. (2019). Rare earth elements: A review of applications, occurrence, explo-
+ration, analysis, recycling, and environmental impact. Geoscience Frontiers,
+10 (4), 1285–1303. https://doi.org/10.1016/j.gsf.2018.12.005
+
+Banerjee, S., Akkaya, C., Perez-Sorrosal, F., & Tsioutsiouliklis, K. (2019). Hierar-
+chical Transfer Learning for Multi-label Text Classification. In A. Korhonen,
+D. Traum, & L. MÃ rquez (Eds.), Proceedings of the 57th Annual Meeting of
+the Association for Computational Linguistics (pp. 6295–6300). Association
+for Computational Linguistics. https://doi.org/10.18653/v1/P19-1633
+Bashir, N., Donti, P., Cuff, J., Sroka, S., Ilic, M., Sze, V., Delimitrou, C., & Olivetti,
+E. (2024). The Climate and Sustainability Implications of Generative AI.
+An MIT Exploration of Generative AI. Retrieved July 15, 2024, from https:
+//mit-genai.pubpub.org/pub/8ulgrckc/release/2
+
+Bast, D., Carr, C., Madron, K., & Syrus, A. M. (2022). Four reasons why data centers
+matter, five implications of their social spatial distribution, one graphic to
+visualize them. Environment and Planning A: Economy and Space, 54 (3),
+441–445. https://doi.org/10.1177/0308518X211069139
+
+Bekamiri, H., Hain, D. S., & Jurowetzki, R. (2021). PatentSBERTa: A Deep NLP
+based Hybrid Model for Patent Distance and Classification using Augmented
+SBERT. https://doi.org/10.48550/arXiv.2103.11933
+
+Beltagy, I., Lo, K., & Cohan, A. (2019). SciBERT: A Pretrained Language Model
+
+for Scientific Text. https://doi.org/10.48550/arXiv.1903.10676
+
+Beltagy, I., Peters, M. E., & Cohan, A. (2020). Longformer: The Long-Document
+
+Transformer. https://doi.org/10.48550/arXiv.2004.05150
+
+47
+
+1084599
+
+Bessen, J., & Hunt, R. M. (2007). An Empirical Look at Software Patents. Journal
+of Economics & Management Strategy, 16 (1), 157–189. https://doi.org/10.
+1111/j.1530-9134.2007.00136.x
+
+Bokrantz, J., Skoogh, A., Berlin, C., Wuest, T., & Stahre, J. (2020). Smart Main-
+tenance: A research agenda for industrial maintenance management. Inter-
+national Journal of Production Economics, 224, 107547. https://doi.org/10.
+1016/j.ijpe.2019.107547
+
+Bouza, L., Bugeau, A., & Lannelongue, L. (2023). How to estimate carbon footprint
+when training deep learning models? A guide and review [Publisher: IOP
+Publishing]. Environmental Research Communications, 5 (11), 115014. https:
+//doi.org/10.1088/2515-7620/acf81b
+
+Calvin, N., & Leung, J. (2020). Who owns artificial intelligence? A preliminary
+analysis of corporate intellectual property strategies and why they matter.
+Future of Humanity Institute, February. Retrieved May 21, 2024, from https:
+//www.fhi.ox.ac.uk/wp-content/uploads/GovAI-working-paper-Who-owns-
+AI-Apr2020.pdf
+
+Chien, A. A., Lin, L., Nguyen, H., Rao, V., Sharma, T., & Wijayawardana, R.
+(2023). Reducing the Carbon Impact of Generative AI Inference (today and
+in 2035). Proceedings of the 2nd Workshop on Sustainable Computer Systems,
+1–7. https://doi.org/10.1145/3604930.3605705
+
+Coeckelbergh, M., & Saetra, H. S. (2023). Climate change and the political pathways
+of AI: The technocracy-democracy dilemma in light of artificial intelligence
+and human agency. Technology in Society, 75, 102406. https://doi.org/10.
+1016/j.techsoc.2023.102406
+
+Cohan, A., Feldman, S., Beltagy, I., Downey, D., & Weld, D. S. (2020). SPECTER:
+Document-level Representation Learning using Citation-informed Transform-
+ers. https://doi.org/10.48550/arXiv.2004.07180
+
+Comino, S., Manenti, F. M., & Thumm, N. (2019). The Role of Patents in Informa-
+tion and Communication Technologies: A Survey of the Literature. Journal
+of Economic Surveys, 33 (2), 404–430. https://doi.org/10.1111/joes.12277
+
+Cowls, J., Tsamados, A., Taddeo, M., & Floridi, L. (2021, March). The AI Gambit.
+Leveraging Artificial Intelligence to Combat Climate Change: Opportunities,
+Challenges, and Recommendations. https://doi.org/10.2139/ssrn.3804983
+
+Craswell, N., Mitra, B., Yilmaz, E., Campos, D., & Voorhees, E. M. (2020). Overview
+of the TREC 2019 deep learning track. https://doi.org/10.48550/arXiv.2003.
+07820
+
+Dahlin, K. B., & Behrens, D. M. (2005). When is an invention really radical?: Defin-
+ing and measuring technological radicalness. Research Policy, 34 (5), 717–737.
+https://doi.org/10.1016/j.respol.2005.03.009
+
+Daim, T. U., Rueda, G., Martin, H., & Gerdsri, P. (2006). Forecasting emerging
+technologies: Use of bibliometrics and patent analysis. Technological Fore-
+casting and Social Change, 73 (8), 981–1012. https : / / doi . org / 10 . 1016 / j .
+techfore.2006.04.004
+
+Department for Environment, Food and Rural Affairs. (2024). Water abstraction
+statistics: England, 2000 to 2018. Retrieved July 19, 2024, from https : / /
+
+48
+
+1084599
+
+www . gov . uk / government / statistics / water - abstraction - estimates / water -
+abstraction-statistics-england-2000-to-2018
+
+Devlin, J., Chang, M.-W., Lee, K., & Toutanova, K. (2019, May). BERT: Pre-
+training of Deep Bidirectional Transformers for Language Understanding
+[arXiv:1810.04805 [cs]]. https://doi.org/10.48550/arXiv.1810.04805
+Ein-Dor, L., Halfon, A., Gera, A., Shnarch, E., Dankin, L., Choshen, L., Danilevsky,
+M., Aharonov, R., Katz, Y., & Slonim, N. (2020). Active Learning for BERT:
+An Empirical Study. In B. Webber, T. Cohn, Y. He, & Y. Liu (Eds.), Pro-
+ceedings of the 2020 Conference on Empirical Methods in Natural Language
+Processing (EMNLP) (pp. 7949–7962). Association for Computational Lin-
+guistics. https://doi.org/10.18653/v1/2020.emnlp-main.638
+
+EPO. (2024a). Artificial intelligence. Retrieved July 17, 2024, from https://www.
+
+epo.org/en/news-events/in-focus/ict/artificial-intelligence
+
+EPO. (2024b). PATSTAT. Retrieved May 29, 2024, from https://www.epo.org/en/
+
+searching-for-patents/business/patstat
+
+Fan, Z., Yan, Z., & Wen, S. (2023). Deep Learning and Artificial Intelligence in
+Sustainability: A Review of SDGs, Renewable Energy, and Environmental
+Health. Sustainability, 15 (18), 13493. https://doi.org/10.3390/su151813493
+Favot, M., Vesnic, L., Priore, R., Bincoletto, A., & Morea, F. (2023). Green patents
+and green codes: How different methodologies lead to different results. Re-
+sources, Conservation & Recycling Advances, 18, 200132. https://doi.org/
+10.1016/j.rcradv.2023.200132
+
+Forti, V., Balde, C. P., Kuehr, R., & Bel, G. (2020). The Global E-waste Monitor
+2020: Quantities, flows and the circular economy potential. Retrieved July
+22, 2024, from http://collections.unu.edu/view/UNU:7737
+
+Freire-Gonzalez, J. (2021). Governing Jevons Paradox: Policies and systemic alter-
+natives to avoid the rebound effect. Energy Research & Social Science, 72,
+101893. https://doi.org/10.1016/j.erss.2020.101893
+
+Gereffi, G. (2014). Global value chains in a post-Washington Consensus world. Re-
+view of International Political Economy, 21 (1), 9–37. https://doi.org/10.
+1080/09692290.2012.756414
+
+Giczy, A. V., Pairolero, N. A., & Toole, A. A. (2022). Identifying artificial intelli-
+gence (AI) invention: A novel AI patent dataset. The Journal of Technology
+Transfer, 47 (2), 476–505. https://doi.org/10.1007/s10961-021-09900-2
+Gomez-Trujillo, A. M., Velez-Ocampo, J., & Gonzalez-Perez, M. A. (2020). A liter-
+ature review on the causality between sustainability and corporate reputa-
+tion: What goes first? [Publisher: Emerald Publishing Limited]. Management
+of Environmental Quality: An International Journal, 31 (2), 406–430. https:
+//doi.org/10.1108/MEQ-09-2019-0207
+
+Google. (2023, October). How we are using AI to combat floods, wildfires and ex-
+treme heat. Retrieved July 19, 2024, from https://blog.google/outreach-
+initiatives/sustainability/google-ai-climate-change-solutions/
+
+Google. (2024). Environmental Report 2024. Retrieved July 19, 2024, from https:
+//www.gstatic.com/gumdrop/sustainability/google- 2024- environmental-
+report.pdf
+
+49
+
+1084599
+
+Google & Boston Consulting Group. (2023). Accelerating climate action with AI
+(tech. rep.). Retrieved July 19, 2024, from https://blog.google/outreach-
+initiatives/sustainability/report-ai-sustainability-google-cop28/
+
+Grand View Research. (2023). U.S. Artificial Intelligence Market Size | Industry
+Report, 2030 (tech. rep.). Retrieved July 30, 2024, from https : / / www .
+grandviewresearch . com / industry - analysis / us - artificial - intelligence - ai -
+market-report
+
+Grand View Research. (2024a). Artificial Intelligence Market Report 2030 (tech.
+rep.). Retrieved July 17, 2024, from https://www.grandviewresearch.com/
+industry-analysis/artificial-intelligence-ai-market
+
+Grand View Research. (2024b). Europe Artificial Intelligence Market | Industry
+Report, 2030 (tech. rep.). Retrieved May 31, 2024, from https : / / www .
+grandviewresearch . com / industry - analysis / europe - artificial - intelligence -
+market-report
+
+Grootendorst, M. (2022, March). BERTopic: Neural topic modeling with a class-
+based TF-IDF procedure. https://doi.org/10.48550/arXiv.2203.05794
+Gunderson, R., Petersen, B., & Stuart, D. (2018). A Critical Examination of Geo-
+engineering: Economic and Technological Rationality in Social Context. Sus-
+tainability, 10 (1), 269. https://doi.org/10.3390/su10010269
+
+Habibollahi Najaf Abadi, H., & Pecht, M. (2020). Artificial Intelligence Trends Based
+on the Patents Granted by the United States Patent and Trademark Office.
+IEEE Access, 8, 81633–81643. https : / / doi . org / 10 . 1109 / ACCESS . 2020 .
+2988815
+
+Hartmann, D., Zagato, L., Gala, P., & Pinheiro, F. L. (2021). Why did some coun-
+tries catch-up, while others got stuck in the middle? Stages of productive so-
+phistication and smart industrial policies. Structural Change and Economic
+Dynamics, 58, 1–13. https://doi.org/10.1016/j.strueco.2021.04.007
+Hascic, I., & Migotto, M. (2015). Measuring environmental innovation using patent
+
+data (tech. rep.). OECD. Paris. https://doi.org/10.1787/5js009kf48xw-en
+
+Henderson, P., Hu, J., Romoff, J., Brunskill, E., Jurafsky, D., & Pineau, J. (2020).
+Towards the Systematic Reporting of the Energy and Carbon Footprints of
+Machine Learning. Journal of Machine Learning Research, 21 (248), 1–43.
+Retrieved July 14, 2024, from http://jmlr.org/papers/v21/20-312.html
+Hermundsdottir, F., & Aspelund, A. (2021). Sustainability innovations and firm
+competitiveness: A review. Journal of Cleaner Production, 280, 124715. https:
+//doi.org/10.1016/j.jclepro.2020.124715
+
+Huang, Y., Giledereli, B., Koksal, A., Ozgur, A., & Ozkirimli, E. (2021). Balancing
+Methods for Multi-label Text Classification with Long-Tailed Class Distribu-
+tion. https://doi.org/10.48550/arXiv.2109.04712
+
+Hutson, M. (2023). AI for drug discovery is booming, but who owns the patents?
+Nature Biotechnology, 41 (11), 1494–1496. https://doi.org/10.1038/s41587-
+023-02029-7
+
+Ibarra, H., & Rattan, A. (2018). Microsoft: Instilling a growth mindset. London
+Business School Review, 29 (3), 50–53. https : / / doi . org / 10 . 1111 / 2057 -
+1615.12262
+
+50
+
+1084599
+
+International Energy Agency. (2021). Europe: Countries & Regions. Retrieved July
+
+22, 2024, from https://www.iea.org/regions/europe/emissions
+
+International Energy Agency. (2024). Electricity 2024: Analysis and key findings.
+Retrieved July 18, 2024, from https://www.iea.org/reports/electricity-2024
+James, G., Witten, D., Hastie, T., & Tibshirani, R. (2017). An introduction to
+statistical learning : With applications in R. Springer. Retrieved June 25,
+2024, from https://thuvienso.hoasen.edu.vn/handle/123456789/10495
+Jeon, J., Chae, S., & Gim, J. (2020). Technical Invention Trend Analysis of Appli-
+cants Based on CPC Classification. In M. Brambilla, C. Cappiello, & S. H.
+Ow (Eds.), Current Trends in Web Engineering (pp. 10–17). Springer Inter-
+national Publishing. https://doi.org/10.1007/978-3-030-51253-8_2
+Jiang, L., & Goetz, S. (2024). Artificial Intelligence Exploring the Patent Field.
+
+https://doi.org/10.48550/arXiv.2403.04105
+
+Kaack, L., Donti, P., Strubell, E., & Rolnick, D. (2020). Artificial Intelligence and
+Climate Change: Opportunities, considerations, and policy levers to align AI
+with climate change goals. Retrieved May 15, 2024, from https://opus4.kobv.
+de/opus4-hsog/frontdoor/index/index/docId/4129
+
+Kak, A., & Myers West, S. (2023). AI Now 2023 Landscape: Confronting Tech Power
+(tech. rep.). AI Now. Retrieved July 22, 2024, from https://ainowinstitute.
+org / wp - content / uploads / 2023 / 04 / AI - Now - 2023 - Landscape - Report -
+FINAL.pdf
+
+Khakurel, J., Penzenstadler, B., Porras, J., Knutas, A., & Zhang, W. (2018). The
+Rise of Artificial Intelligence under the Lens of Sustainability. Technologies,
+6 (4), 100. https://doi.org/10.3390/technologies6040100
+
+Koroteev, M. V. (2021). BERT: A Review of Applications in Natural Language
+
+Processing and Understanding. https://doi.org/10.48550/arXiv.2103.11943
+
+Kuntsman, A., & Rattle, I. (2019). Towards a Paradigmatic Shift in Sustainabil-
+ity Studies: A Systematic Review of Peer Reviewed Literature and Future
+Agenda Setting to Consider Environmental (Un)sustainability of Digital Com-
+munication. Environmental Communication, 13 (5), 567–581. https : / / doi .
+org/10.1080/17524032.2019.1596144
+
+La Diega, G. N. (2018). Against the Dehumanisation of Decision-Making. Journal
+of Intellectual Property, Information Technology and Electronic Commerce
+Law, 9 (1), 3–34. Retrieved May 16, 2024, from https://heinonline.org/HOL/
+P?h=hein.journals/jipitec9&i=6
+
+Lacoste, A., Luccioni, A., Schmidt, V., & Dandres, T. (2019). Quantifying the Car-
+bon Emissions of Machine Learning. https://doi.org/10.48550/arXiv.1910.
+09700
+
+Lee, K., Ippolito, D., Nystrom, A., Zhang, C., Eck, D., Callison-Burch, C., & Car-
+lini, N. (2022). Deduplicating Training Data Makes Language Models Better.
+https://doi.org/10.48550/arXiv.2107.06499
+
+Lewis, D. D. (1995). A sequential algorithm for training text classifiers: Corrigendum
+and additional data. ACM SIGIR Forum, 29 (2), 13–19. https://doi.org/10.
+1145/219587.219592
+
+51
+
+1084599
+
+Li, D., Alkemade, F., Frenken, K., & Heimeriks, G. (2023). Catching up in clean
+energy technologies: A patent analysis. The Journal of Technology Transfer,
+48 (2), 693–715. https://doi.org/10.1007/s10961-021-09912-y
+
+Li, G., Wang, X., Su, S., & Su, Y. (2019). How green technological innovation abil-
+ity influences enterprise competitiveness. Technology in Society, 59, 101136.
+https://doi.org/10.1016/j.techsoc.2019.04.012
+
+Li, P., Yang, J., Islam, M. A., & Ren, S. (2023). Making AI Less "Thirsty": Un-
+covering and Addressing the Secret Water Footprint of AI Models. https :
+//doi.org/10.48550/arXiv.2304.03271
+
+Li, S., Hu, J., Cui, Y., & Hu, J. (2018). DeepPatent: Patent classification with
+convolutional neural networks and word embedding. Scientometrics, 117 (2),
+721–744. https://doi.org/10.1007/s11192-018-2905-5
+
+Ligozat, A.-L., Lefevre, J., Bugeau, A., & Combaz, J. (2022). Unraveling the Hidden
+Environmental Impacts of AI Solutions for Environment. https://doi.org/
+10.48550/arXiv.2110.11822
+
+Liu, K., Wei, Z., Zhang, C., Shang, Y., Teodorescu, R., & Han, Q.-L. (2022). Towards
+Long Lifetime Battery: AI-Based Manufacturing and Management. IEEE/-
+CAA Journal of Automatica Sinica, 9 (7), 1139–1165. https://doi.org/10.
+1109/JAS.2022.105599
+
+Masanet, E., Shehabi, A., Lei, N., Smith, S., & Koomey, J. (2020). Recalibrating
+global data center energy-use estimates. Science, 367 (6481), 984–986. https:
+//doi.org/10.1126/science.aba3758
+
+Mashhadi Rajabi, M. (2022). Dilemmas of energy efficiency: A systematic review
+of the rebound effect and attempts to curb energy consumption. Energy Re-
+search & Social Science, 89, 102661. https://doi.org/10.1016/j.erss.2022.
+102661
+
+McInnes, L., Healy, J., & Melville, J. (2020). UMAP: Uniform Manifold Approxi-
+mation and Projection for Dimension Reduction. https://doi.org/10.48550/
+arXiv.1802.03426
+
+Mendes, M. V. I. (2023). Big Tech firms and the politics of climate change: Mapping
+the low-carbon vested interests of Alphabet, Amazon, Apple, Meta. Retrieved
+July 16, 2024, from http://www.rlbea.unb.br/jspui/handle/10482/45429
+
+Menghi, R., Papetti, A., Germani, M., & Marconi, M. (2019). Energy efficiency of
+manufacturing systems: A review of energy assessment methods and tools.
+Journal of Cleaner Production, 240, 118276. https : / / doi . org / 10 . 1016 / j .
+jclepro.2019.118276
+
+Meyers, J. M. (2018). Artificial Intelligence and Trade Secrets. Landslide, 11 (3),
+17–21. Retrieved May 14, 2024, from https://heinonline.org/HOL/P?h=
+hein.journals/lndslid11&i=160
+
+Mittal, S., Khan, M. A., Purohit, J. K., Menon, K., Romero, D., & Wuest, T.
+(2020). A smart manufacturing adoption framework for SMEs. International
+Journal of Production Research, 58 (5), 1555–1573. https://doi.org/10.1080/
+00207543.2019.1661540
+
+Mohamadi, A., Heidarizadi, Z., & Nourollahi, H. (2016). Assessing the desertifica-
+tion trend using neural network classification and object-oriented techniques
+(Case study: Changouleh watershed - Ilam Province of Iran). Journal of the
+
+52
+
+1084599
+
+Faculty of Forestry Istanbul University, 66 (2), 683–690. https://doi.org/10.
+17099/jffiu.75819
+
+Morelli, J. (2013). Environmental Sustainability: A Definition for Environmental
+Professionals. Journal of Environmental Sustainability, 1 (1). https : / / doi .
+org/10.14448/jes.01.0002
+
+Morozov, E. (2013). To save everything, click here: The folly of technological solu-
+
+tionism. PublicAffairs.
+
+Mytton, D. (2021). Data centre water consumption [Publisher: Nature Publishing
+Group]. npj Clean Water, 4 (1), 1–6. https://doi.org/10.1038/s41545-021-
+00101-w
+
+Nachtwey, O., & Seidl, T. (2024). The Solutionist Ethic and the Spirit of Digital
+Capitalism [Publisher: SAGE Publications Ltd]. Theory, Culture & Society,
+41 (2), 91–112. https://doi.org/10.1177/02632764231196829
+
+Naidu, R., Diddee, H., Mulay, A., Vardhan, A., Ramesh, K., & Zamzam, A. (2021).
+Towards Quantifying the Carbon Emissions of Differentially Private Machine
+Learning. https://doi.org/10.48550/arXiv.2107.06946
+
+Nayar, J. (2021). Not so ’green’ technology: The complicated legacy of rare earth
+
+mining. Harvard International Review, 12.
+
+Nearing, G., Cohen, D., Dube, V., Gauch, M., Gilon, O., Harrigan, S., Hassidim,
+A., Klotz, D., Kratzert, F., Metzger, A., Nevo, S., Pappenberger, F., Prud-
+homme, C., Shalev, G., Shenzis, S., Tekalign, T. Y., Weitzner, D., & Matias,
+Y. (2024). Global prediction of extreme floods in ungauged watersheds. Na-
+ture, 627 (8004), 559–563. https://doi.org/10.1038/s41586-024-07145-1
+Neyman, J. (1992). On the Two Different Aspects of the Representative Method:
+The Method of Stratified Sampling and the Method of Purposive Selection.
+In S. Kotz & N. L. Johnson (Eds.), Breakthroughs in Statistics: Methodology
+and Distribution (pp. 123–150). Springer. https://doi.org/10.1007/978- 1-
+4612-4380-9_12
+
+Nishant, R., Kennedy, M., & Corbett, J. (2020). Artificial intelligence for sustain-
+ability: Challenges, opportunities, and a research agenda. International Jour-
+nal of Information Management, 53, 102104. https : / / doi . org / 10 . 1016 / j .
+ijinfomgt.2020.102104
+
+Noel, M., & Schankerman, M. (2013). Strategic Patenting and Software Innovation.
+The Journal of Industrial Economics, 61 (3), 481–520. https://doi.org/10.
+1111/joie.12024
+
+NVIDIA. (2022). Corporate Responsibility Report (tech. rep.). Retrieved July 16,
+2024, from https : / / images . nvidia . com / aem - dam / en - zz / Solutions / csr /
+FY2022-NVIDIA-Corporate-Responsibility.pdf
+
+Patterson, D., Gonzalez, J., Le, Q., Liang, C., Munguia, L.-M., Rothchild, D., So, D.,
+Texier, M., & Dean, J. (2021). Carbon Emissions and Large Neural Network
+Training. https://doi.org/10.48550/arXiv.2104.10350
+
+Pila, J. (2019). European intellectual property law (2nd edition.). University Press.
+Qiu, S., Yang, H., Huang, Z., & Shen, D. (2023). Transformer-based Siamese Neural
+Network Face Verification Method. 2023 8th International Conference on
+Intelligent Computing and Signal Processing (ICSP), 15–19. https : / / doi .
+org/10.1109/ICSP58490.2023.10248213
+
+53
+
+1084599
+
+Ram Nidumolu, C. K. P. (2009). Why Sustainability Is Now the Key Driver of
+Innovation. Harvard Business Review. Retrieved July 16, 2024, from https:
+//hbr.org/2009/09/why-sustainability-is-now-the-key-driver-of-innovation
+
+Rikap, C. (2023). Capitalism as usual? Implications of digital intellectual monop-
+olies. New Left Review, 139, 145–160. Retrieved July 17, 2024, from https:
+/ / discovery. ucl . ac . uk / id / eprint / 10185469 / 1 / Cecilia % 20Rikap % 2C %
+20Capitalism%20as%20Usual%20%2C%20NLR%20139%2C%20January%
+20February%202023.pdf
+
+Rolnick, D., Donti, P. L., Kaack, L. H., Kochanski, K., Lacoste, A., Sankaran, K.,
+Ross, A. S., Milojevic-Dupont, N., Jaques, N., Waldman-Brown, A., Luccioni,
+A., Maharaj, T., Sherwin, E. D., Mukkavilli, S. K., Kording, K. P., Gomes, C.,
+Ng, A. Y., Hassabis, D., Platt, J. C., . . . Bengio, Y. (2019). Tackling Climate
+Change with Machine Learning. https://doi.org/10.48550/arXiv.1906.05433
+Saetra, H. S. (2023). Technology and Sustainable Development: The Promise and
+
+Pitfalls of Techno-Solutionism. Taylor & Francis.
+
+Serban, A. C., & Lytras, M. D. (2020). Artificial Intelligence for Smart Renewable
+Energy Sector in Europe: Smart Energy Infrastructures for Next Generation
+Smart Cities [Conference Name: IEEE Access]. IEEE Access, 8, 77364–77377.
+https://doi.org/10.1109/ACCESS.2020.2990123
+
+Shenoy, P. (2023). Energy-Efficiency versus Carbon-Efficiency: What’s the differ-
+ence? SIGENERGY Energy Inform. Rev., 2 (4), 1–2. https : / / doi . org / 10 .
+1145/3584024.3584025
+
+Siqueira-Gay, J., & Sanchez, L. E. (2020). Keep the Amazon niobium in the ground.
+Environmental Science & Policy, 111, 1–6. https://doi.org/10.1016/j.envsci.
+2020.05.012
+
+Stasis, S., Stables, R., & Hockman, J. (2016). Semantically Controlled Adaptive
+Equalisation in Reduced Dimensionality Parameter Space. Applied Sciences,
+6 (4), 116. https://doi.org/10.3390/app6040116
+
+Stein, A. L. (2020). Artificial Intelligence and Climate Change Special Issue: Reg-
+ulating the Technological Frontier. Yale Journal on Regulation, 37 (3), 890–
+939. Retrieved July 14, 2024, from https://heinonline.org/HOL/P?h=hein.
+journals/yjor37&i=902
+
+Sun, R. (2019). Optimization for deep learning: Theory and algorithms. https://
+
+doi.org/10.48550/arXiv.1912.08957
+
+Tharwat, A., & Schenck, W. (2023). A Survey on Active Learning: State-of-the-
+Art, Practical Challenges and Research Directions. Mathematics, 11 (4), 820.
+https://doi.org/10.3390/math11040820
+
+Tomasev, N., Cornebise, J., Hutter, F., Mohamed, S., Picciariello, A., Connelly, B.,
+Belgrave, D. C. M., Ezer, D., Haert, F. C. v. d., Mugisha, F., Abila, G., Arai,
+H., Almiraat, H., Proskurnia, J., Snyder, K., Otake-Matsuura, M., Othman,
+M., Glasmachers, T., Wever, W. d., . . . Clopath, C. (2020). AI for social
+good: Unlocking the opportunity for positive impact. Nature Communica-
+tions, 11 (1), 2468. https://doi.org/10.1038/s41467-020-15871-z
+
+Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, M.-A., Lacroix, T.,
+Roziere, B., Goyal, N., Hambro, E., Azhar, F., Rodriguez, A., Joulin, A.,
+Grave, E., & Lample, G. (2023). LLaMA: Open and Efficient Foundation
+
+54
+
+1084599
+
+Language Models [arXiv:2302.13971 [cs]]. https://doi.org/10.48550/arXiv.
+2302.13971
+
+UNFCCC. (2024). AI4ClimateAction. Retrieved July 19, 2024, from https://unfccc.
+
+int/ttclear/artificial_intelligence
+
+van Wynsberghe, A. (2021). Sustainable AI: AI for sustainability and the sustain-
+ability of AI. AI and Ethics, 1 (3), 213–218. https://doi.org/10.1007/s43681-
+021-00043-6
+
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser,
+Å. u., & Polosukhin, I. (2017). Attention is All you Need. Advances in Neural
+Information Processing Systems, 30. Retrieved June 25, 2024, from https://
+papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-
+Abstract.html
+
+Veale, M., & Borgesius, F. Z. (2021). Demystifying the Draft EU Artificial Intelli-
+gence Act. Analysing the good, the bad, and the unclear elements of the pro-
+posed approach. Computer Law Review International, 22 (4), 97–112. https:
+//doi.org/10.9785/cri-2021-220402
+
+Veefkind, V., Hurtado-Albir, J., Angelucci, S., Karachalios, K., & Thumm, N. (2012).
+A new EPO classification scheme for climate change mitigation technologies.
+World Patent Information, 34 (2), 106–111. https://doi.org/10.1016/j.wpi.
+2011.12.004
+
+Verdecchia, R., Cruz, L., Sallou, J., Lin, M., Wickenden, J., & Hotellier, E. (2022).
+Data-Centric Green AI An Exploratory Empirical Study. 2022 International
+Conference on ICT for Sustainability (ICT4S), 35–45. https://doi.org/10.
+1109/ICT4S55073.2022.00015
+
+Verdecchia, R., Sallou, J., & Cruz, L. (2023). A systematic review of Green AI.
+WIREs Data Mining and Knowledge Discovery, 13 (4), e1507. https://doi.
+org/10.1002/widm.1507
+
+Verendel, V. (2023). Tracking artificial intelligence in climate inventions with patent
+data [Publisher: Nature Publishing Group]. Nature Climate Change, 13 (1),
+40–47. https://doi.org/10.1038/s41558-022-01536-w
+
+Vinuesa, R., Azizpour, H., Leite, I., Balaam, M., Dignum, V., Domisch, S., Fellaen-
+der, A., Langhans, S. D., Tegmark, M., & Fuso Nerini, F. (2020). The role of
+artificial intelligence in achieving the Sustainable Development Goals. Nature
+Communications, 11 (1), 233. https://doi.org/10.1038/s41467-019-14108-y
+
+Wang, H., Zhong, R. Y., Liu, G., Mu, W., Tian, X., & Leng, D. (2019). An op-
+timization model for energy-efficient machining for sustainable production.
+Journal of Cleaner Production, 232, 1121–1133. https://doi.org/10.1016/j.
+jclepro.2019.05.271
+
+Wesolowski, L., Acun, B., Andrei, V., Aziz, A., Dankel, G., Gregg, C., Meng, X.,
+Meurillon, C., Sheahan, D., Tian, L., Yang, J., Yu, P., & Hazelwood, K.
+(2021). Datacenter-Scale Analysis and Optimization of GPU Machine Learn-
+ing Workloads. IEEE Micro, 41 (5), 101–112. https://doi.org/10.1109/MM.
+2021.3097287
+
+Widdicks, K., Lucivero, F., Samuel, G., Croxatto, L. S., Smith, M. T., Holter, C. T.,
+Berners-Lee, M., Blair, G. S., Jirotka, M., Knowles, B., Sorrell, S., Rivera,
+M. B., Cook, C., Coroama, V. C., Foxon, T. J., Hardy, J., Hilty, L. M.,
+
+55
+
+1084599
+
+Hinterholzer, S., & Penzenstadler, B. (2023). Systems thinking and efficiency
+under emissions constraints: Addressing rebound effects in digital innovation
+and policy. Patterns, 4 (2). https://doi.org/10.1016/j.patter.2023.100679
+
+WIPO. (2010). IPC GREEN INVENTORY. Retrieved June 25, 2024, from https:
+
+//www.wipo.int/classifications/ipc/green-inventory/home
+
+WIPO. (2019). WIPO technology trends 2019: Artificial intelligence. Geneva: World
+
+Intellectual Property Organization.
+
+Word Economic Forum. (2018). Fourth Industrial Revolution for the Earth Series:
+Harnessing Artificial Intelligence for the Earth (tech. rep.). Retrieved May
+31, 2024, from https://www3.weforum.org/docs/Harnessing_Artificial_
+Intelligence_for_the_Earth_report_2018.pdf
+
+World Economic Forum. (2024). 9 ways AI is helping tackle climate change. Re-
+trieved July 19, 2024, from https://www.weforum.org/agenda/2024/02/ai-
+combat-climate-change/
+
+Wright, D., Igel, C., Samuel, G., & Selvan, R. (2023). Efficiency is Not Enough: A
+Critical Perspective of Environmentally Sustainable AI. https://doi.org/10.
+48550/arXiv.2309.02065
+
+Wu, C.-J., Raghavendra, R., Gupta, U., Acun, B., Ardalani, N., Maeng, K., Chang,
+G., Aga, F., Huang, J., Bai, C., Gschwind, M., Gupta, A., Ott, M., Melnikov,
+A., Candido, S., Brooks, D., Chauhan, G., Lee, B., Lee, H.-H., . . . Hazelwood,
+K. (2022). Sustainable AI: Environmental Implications, Challenges and Op-
+portunities. Proceedings of Machine Learning and Systems, 4, 795–813. Re-
+trieved May 31, 2024, from https : / / proceedings . mlsys . org / paper _ files /
+paper/2022/hash/462211f67c7d858f663355eff93b745e-Abstract.html
+Yang, G.-C., Li, G., Li, C.-Y., Zhao, Y.-H., Zhang, J., Liu, T., Chen, D.-Z., & Huang,
+M.-H. (2015). Using the comprehensive patent citation network (CPC) to
+evaluate patent value. Scientometrics, 105 (3), 1319–1346. https://doi.org/
+10.1007/s11192-015-1763-7
+
+Yang, Z., Nguyen, T. T. H., Nguyen, H. N., Nguyen, T. T. N., & Cao, T. T. (2020).
+Greenwashing behaviours: Causes, taxonomy and consequences based on a
+systematic literature review [Number: 5]. Journal of Business Economics and
+Management, 21 (5), 1486–1507. https://doi.org/10.3846/jbem.2020.13225
+
+Zhang, B., Davoodi, A., & Hu, Y. H. (2018). Exploring Energy and Accuracy Trade-
+off in Structure Simplification of Trained Deep Neural Networks. IEEE Jour-
+nal on Emerging and Selected Topics in Circuits and Systems, 8 (4), 836–848.
+https://doi.org/10.1109/JETCAS.2018.2833383
+
+Zhu, T., Wang, X., Zhao, F., & Torrico-Bascope, G. V. (2023). Impedance-Based
+Aggregation of Paralleled Power Factor Correction Converters in Data Cen-
+ters. IEEE Transactions on Power Electronics, 38 (4), 5254–5265. https://
+doi.org/10.1109/TPEL.2022.3230645
+
+56
+
+A | Keyword searches for Sustainability of AI la-
+
+belled patents
+
+For constructing the keyword searches, I used two groups of keywords. On the one
+hand, I used general descriptive words indicating that an AI technology is made more
+sustainable. On the other hand, I used keywords capturing example technologies
+along the AI pipeline that likely fall under Sustainability of AI. Keywords are listed
+in Table A.1.
+
+Keywords
+
+Keywords
+
+energy-efficient ai
+sustainable ai
+green computing
+renewable energy for ai
+carbon-neutral ai
+power-aware ai
+energy-efficient algorithm
+resource-constrained ai
+eco-conscious ai
+environmentally friendly ai
+green machine learning
+carbon-neutral machine learning
+power-aware machine learning
+energy-efficient machine learning
+resource-constrained machine learning
+eco-conscious machine learning
+environmentally friendly machine learning
+energy-efficient hardware
+power-efficient ai
+sustainable machine learning
+green neural networks
+sustainable deep learning
+energy-efficient inference
+environmentally conscious ai
+green data centers
+
+model compression
+pruning
+efficient network
+memory utilisation
+edge-based computing
+edge computing
+data cente
+data centre
+cooling
+low precision
+hardware acceleration
+gpu
+tpu
+fpga
+tensor processing
+lightweight CNN
+sparse computing
+quantization
+batch optimization
+batch optimisation
+huffman coding
+uninterruptible power supply
+data augmentation
+hardware utilisation
+hardware utilization
+
+Table A.1: Keyword search list to sample Sustainability of AI related patents
+
+57
+
+B | Zero-shot topic descriptions
+
+To analyse how innovation is spread across different elements of the AI pipeline,
+zero-shot topic modelling was used. For this, pre-defined topic descriptions are
+required, based on which documents are assigned to a topic. The topic descriptions
+are listed Table B.1. Note that some experimentation revealed that descriptions
+based on examples showed much more sensible clustering compared to meta-level
+descriptions.
+
+High-level
+overview
+
+Data collection
+
+AI operations
+
+Operations
+
+Infra-
+structure
+
+Topic description
+
+Platform
+
+Model
+
+Specialised
+Hardware
+
+Infrastructure
+
+Network
+
+Storage
+
+General
+Hardware
+
+sensor, data collection, environmental monitoring,
+IoT sensors
+
+platform for optimization techniques, framework, li-
+brary
+
+algorithmic design, weights, pruned, parallelism,
+model compression
+
+computation, specialized acceleration, application-
+specific integrated circuits, field-programmable gate
+array
+
+network infrastructure, bandwidth, data transmis-
+sion, routers, cable, switch, firewall, connectivity
+
+storage, storage area network, network-attached
+storage, distributed file system
+
+data center, uninterruptible power supply, power
+distribution unit, generator, cooling, ventilation,
+pump, chiller, low-precision hardware
+
+Table B.1: Zero-shot topic descriptions
+
+58
+
+C | Environmental impact keyword list
+
+For analysing the environmental impact of Sustainability of AI innovation, I used
+a keyword search. The four main environmental impacts of AI suggested by the
+literature relate to energy consumption, water consumption, (e-)waste and resource
+depletion, particularly rare metals which are crucial for many hardware components
+(Ligozat et al., 2022). Table C.1 presents the list of keywords used to identify
+the categories which was iteratively adjusted to capture relevant patents in each
+category.
+
+Impact
+
+Keywords
+
+Energy consumption
+
+energy efficiency, low power, energy saving, power reduction, energy efficient,
+energy-efficient, power efficiency, energy consumption, power consumption, electricity
+consumption, run time, runtime, efficiency, efficient
+
+Water consumption
+
+water-efficient, water-saving, reduced water use, water consumption
+
+Rare metals
+
+Waste
+
+rare-earth-free, alternative materials, reduced metal usage, rare metal, niobium, aluminium,
+europium, gold, silver, platinum, palladium, tin, tantalum, tungsten, bismuth, cadmium,
+cobalt, gallium, germanium, indium, lithium, molybdenum, selenium, tellurium, vanadium,
+zirconium
+
+recyclable, waste reduction, biodegradable, recycled materials, recycling, re-
+cycle, waste, toxic, end of life, durability, longevity, extended life, increase
+lifetime, lifespan, long-lasting, long life
+
+Table C.1: Environmental impact keyword lists
+
+59
+
+
